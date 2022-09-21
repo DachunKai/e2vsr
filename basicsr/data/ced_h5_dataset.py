@@ -1,14 +1,13 @@
-import os
 import numpy as np
 import os.path as osp
 import random
+
+random.seed(0)
 import torch
-import math
 from torch.utils import data as data
 
 from basicsr.data.transforms import augment, paired_random_crop
 from basicsr.utils import FileClient, get_root_logger, img2tensor
-from basicsr.data import build_dataloader, build_dataset
 from basicsr.utils.registry import DATASET_REGISTRY
 
 
@@ -71,8 +70,11 @@ class CEDOnlyFramesDataset(data.Dataset):
         key = self.keys[index]
         clip_name, frame_name = osp.dirname(key), osp.basename(key)
         self.io_backend_opt['h5_clip'] = clip_name
-        if self.file_client is None:
-            self.file_client = FileClient(self.io_backend_opt.pop('type'), **self.io_backend_opt)
+        # if self.file_client is None:
+        self.file_client = FileClient(
+            self.io_backend_opt['type'],
+            **self.io_backend_opt
+            )
         # determine the neighboring frames
 
         interval = random.choice(self.interval_list)
@@ -87,10 +89,11 @@ class CEDOnlyFramesDataset(data.Dataset):
         if self.random_reverse and random.random() < 0.5:
             neighbor_list.reverse()
 
+        print("clip_name: ", clip_name, " neighbor_list: ", neighbor_list)
         img_lqs, img_gts = self.file_client.get(neighbor_list)
 
         # randomly crop
-        img_lqs, img_gts = paired_random_crop(img_gts, img_lqs, gt_size, scale)
+        img_gts, img_lqs = paired_random_crop(img_gts, img_lqs, gt_size, scale)
 
         # augmentation - flip, rotate
         img_lqs.extend(img_gts)
@@ -106,55 +109,3 @@ class CEDOnlyFramesDataset(data.Dataset):
 # @DATASET_REGISTRY.register()
 # class CEDWithEventsDataset(data.Dataset):
 #     raise NotImplementedError
-
-if __name__ == '__main__':
-    opt = {}
-    opt['dist'] = False
-    opt['phase'] = 'train'
-
-    opt['name'] = 'CED'
-    opt['type'] = 'CEDOnlyFramesDataset'
-    opt['test_mode'] = False
-    opt['dataroot_gt'] = 'datasets/CED_h5/HR'
-    opt['dataroot_lq'] = 'datasets/CED_h5/LR'
-    opt['meta_info_file'] = 'basicsr/data/meta_info/CED_h5_train.txt'
-    opt['io_backend'] = dict(type='hdf5')
-
-    opt['num_frame'] = 5
-    opt['gt_size'] = 128
-    opt['interval_list'] = [1]
-    opt['random_reverse'] = True
-    opt['use_hflip'] = True
-    opt['use_rot'] = True
-
-    opt['use_shuffle'] = True
-    opt['num_worker_per_gpu'] = 1
-    opt['batch_size_per_gpu'] = 16
-    opt['scale'] = 2
-
-    opt['dataset_enlarge_ratio'] = 1
-
-    os.makedirs('tmp', exist_ok=True)
-
-    dataset = build_dataset(opt)
-    data_loader = build_dataloader(dataset, opt, num_gpu=0, dist=opt['dist'], sampler=None)
-
-    nrow = int(math.sqrt(opt['batch_size_per_gpu']))
-    padding = 2 if opt['phase'] == 'train' else 0
-
-    print('start...')
-    for i, data in enumerate(data_loader):
-        if i > 5:
-            break
-        print(i)
-
-        lq = data['lq']
-        gt = data['gt']
-        key = data['key']
-        print(lq.shape)
-        # for j in range(opt['num_frame']):
-        #     torchvision.utils.save_image(
-        #         lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
-        #     torchvision.utils.save_image(
-        #         gt[:, j, :, :, :], f'tmp/gt_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
-        # torchvision.utils.save_image(gt, f'tmp/gt_{i:03d}.png', nrow=nrow, padding=padding, normalize=False)
