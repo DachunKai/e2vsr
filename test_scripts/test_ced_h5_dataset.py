@@ -32,7 +32,7 @@ def main(mode='folder'):
     opt['use_rot'] = True
 
     opt['use_shuffle'] = True
-    opt['num_worker_per_gpu'] = 0
+    opt['num_worker_per_gpu'] = 16
     opt['batch_size_per_gpu'] = 4
     opt['scale'] = 2
 
@@ -55,6 +55,7 @@ def main(mode='folder'):
         lq = data['lq']
         gt = data['gt']
         key = data['key']
+        print(lq.shape)
         print(key)
         # for j in range(opt['num_frame']):
         #     torchvision.utils.save_image(

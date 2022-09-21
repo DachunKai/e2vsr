@@ -28,6 +28,7 @@ class CEDOnlyFramesDataset(data.Dataset):
 
         self.keys = []
         self.frame_num_dict = {}
+        self.phase = opt['phase']
 
         # train/test will have different meta_info_file
         with open(opt['meta_info_file'], 'r') as fin:
@@ -89,19 +90,26 @@ class CEDOnlyFramesDataset(data.Dataset):
         if self.random_reverse and random.random() < 0.5:
             neighbor_list.reverse()
 
-        print("clip_name: ", clip_name, " neighbor_list: ", neighbor_list)
+        # print("clip_name: ", clip_name, " neighbor_list: ", neighbor_list)
         img_lqs, img_gts = self.file_client.get(neighbor_list)
 
-        # randomly crop
-        img_gts, img_lqs = paired_random_crop(img_gts, img_lqs, gt_size, scale)
+        if self.phase == 'train':
+            # train
+            # randomly crop
+            img_gts, img_lqs = paired_random_crop(img_gts, img_lqs, gt_size, scale)
 
-        # augmentation - flip, rotate
-        img_lqs.extend(img_gts)
-        img_results = augment(img_lqs, self.opt['use_hflip'], self.opt['use_rot'])
+            # augmentation - flip, rotate
+            img_lqs.extend(img_gts)
+            img_results = augment(img_lqs, self.opt['use_hflip'], self.opt['use_rot'])
 
-        img_results = img2tensor(img_results)
-        img_gts = torch.stack(img_results[len(img_lqs) // 2:], dim=0)
-        img_lqs = torch.stack(img_results[:len(img_lqs) // 2], dim=0)
+            img_results = img2tensor(img_results)
+            img_gts = torch.stack(img_results[len(img_lqs) // 2:], dim=0)
+            img_lqs = torch.stack(img_results[:len(img_lqs) // 2], dim=0)
+
+        else:
+            # test
+            img_lqs = torch.stack(img2tensor(img_lqs), dim=0)
+            img_gts = torch.stack(img2tensor(img_gts), dim=0)
 
         return {'lq': img_lqs, 'gt': img_gts, 'key': key}
 

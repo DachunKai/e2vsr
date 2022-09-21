@@ -149,7 +149,7 @@ class Hdf5Backend(BaseStorageBackend):
 
         self._client = {}
         for client, path in zip(client_keys, self.h5_paths):
-            print("osp.join(path, h5_clip): ", osp.join(path, h5_clip))
+            # print("osp.join(path, h5_clip): ", osp.join(path, h5_clip))
             self._client[client] = h5py.File(osp.join(path, h5_clip), 'r')
         ## Since here, we can get
         ## self._client['LR'] = h5py.File('datasets/CED_h5/LR/simple_carpet.h5', 'r')
