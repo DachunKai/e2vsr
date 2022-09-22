@@ -40,16 +40,16 @@ datasets:
 
   val:
     name: CED11
-    type: CEDOnlyFramesDataset
+    type: CEDOnlyFramesTestDataset
     dataroot_gt: datasets/CED_h5/HR
     dataroot_lq: datasets/CED_h5/LR
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
 
-    cache_data: true # not needed
+    # cache_data: true # not needed
     io_backend:
       type: hdf5
 
-    num_frame: -1  # not needed
+    # num_frame: -1  # not needed
 
 # network structures
 network_g:
