@@ -1,5 +1,5 @@
 # general settings
-name: 002_BasicVSR_baseline_degrade_x2_f64b30_CED_300k_B16N15G4_wandb
+name: debug
 # name: debug_test_BasicVSR_CED
 model_type: VideoRecurrentModel
 scale: 2
@@ -16,10 +16,10 @@ datasets:
     # (for lmdb)
     dataroot_gt: datasets/CED_h5/HR
     dataroot_lq: datasets/CED_h5/LR
-    meta_info_file: basicsr/data/meta_info/CED_h5_train.txt
+    meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_train.txt
     # io_backend:
       # type: disk
-    test_mode: False
+    # test_mode: False
     io_backend:
       type: hdf5
 
@@ -43,9 +43,9 @@ datasets:
     type: CEDOnlyFramesDataset
     dataroot_gt: datasets/CED_h5/HR
     dataroot_lq: datasets/CED_h5/LR
-    meta_info_file: basicsr/data/meta_info/CED_h5_test.txt
+    meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
 
-    cache_data: true
+    cache_data: true # not needed
     io_backend:
       type: hdf5
 

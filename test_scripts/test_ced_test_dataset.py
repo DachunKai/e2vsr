@@ -16,22 +16,14 @@ def main(mode='folder'):
     opt['dist'] = False
     opt['phase'] = 'val'
 
-    opt['name'] = 'CED'
-    opt['type'] = 'CEDOnlyFramesDataset'
+    opt['name'] = 'CED11'
+    opt['type'] = 'CEDOnlyFramesTestDataset'
     # opt['test_mode'] = False
     opt['dataroot_gt'] = 'datasets/CED_h5/HR'
     opt['dataroot_lq'] = 'datasets/CED_h5/LR'
     opt['meta_info_file'] = 'basicsr/data/meta_info/meta_info_CED_h5_test.txt'
     opt['io_backend'] = dict(type='hdf5')
 
-    opt['num_frame'] = 5
-    opt['gt_size'] = 128
-    opt['interval_list'] = [1]
-    opt['random_reverse'] = True
-    opt['use_hflip'] = True
-    opt['use_rot'] = True
-
-    opt['use_shuffle'] = True
     opt['num_worker_per_gpu'] = 16
     opt['batch_size_per_gpu'] = 4
     opt['scale'] = 2
@@ -49,15 +41,15 @@ def main(mode='folder'):
 
     print('start...')
     for i, data in enumerate(data_loader):
-        if i > 5:
+        if i > 10:
             break
         # print(i)
 
         lq = data['lq']
         gt = data['gt']
-        key = data['key']
+        folder = data['folder']
         print(lq.shape)
-        print(key)
+        print(folder)
         # for j in range(opt['num_frame']):
         #     torchvision.utils.save_image(
         #         lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
