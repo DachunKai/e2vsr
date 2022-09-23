@@ -1,5 +1,5 @@
 # general settings
-name: debug
+name: 001_baseline_BasicVSR_x2_f64b30_CED_300k_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: VideoRecurrentModel
 scale: 2
@@ -33,7 +33,7 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 6
-    batch_size_per_gpu: 8
+    batch_size_per_gpu: 4
     dataset_enlarge_ratio: 200
     prefetch_mode: cuda
     pin_memory: true
@@ -92,7 +92,7 @@ train:
 
 # validation settings
 val:
-  val_freq: !!float 5e3
+  val_freq: !!float 1e4
   save_img: false
 
   metrics:
@@ -104,10 +104,10 @@ val:
 # logging settings
 logger:
   print_freq: 100
-  save_checkpoint_freq: !!float 5e3
+  save_checkpoint_freq: !!float 1e4
   use_tb_logger: true
   wandb:
-    project: ~
+    project: e2vsr
     resume_id: ~
 
 # dist training settings
