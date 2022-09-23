@@ -1,3 +1,4 @@
+import os
 import torch
 from collections import Counter
 from os import path as osp
@@ -9,6 +10,22 @@ from basicsr.utils import get_root_logger, imwrite, tensor2img
 from basicsr.utils.dist_util import get_dist_info
 from basicsr.utils.registry import MODEL_REGISTRY
 from .video_base_model import VideoBaseModel
+from torchvision import utils as vutils
+
+def save_image_tensor(input_tensor: torch.Tensor, filename):
+    """
+    将tensor保存为图片
+    :param input_tensor: 要保存的tensor
+    :param filename: 保存的文件名
+    """
+    assert (len(input_tensor.shape) == 4 and input_tensor.shape[0] == 1)
+    # 复制一份
+    input_tensor = input_tensor.clone().detach()
+    # 到cpu
+    input_tensor = input_tensor.to(torch.device('cpu'))
+    # 反归一化
+    # input_tensor = unnormalize(input_tensor)
+    vutils.save_image(input_tensor, filename)
 
 
 @MODEL_REGISTRY.register()
@@ -100,14 +117,20 @@ class VideoRecurrentModel(VideoBaseModel):
             folder = val_data['folder']
 
             # compute outputs
+            # print("val_data['lq'].shape", val_data['lq'].shape)
             val_data['lq'].unsqueeze_(0)
             val_data['gt'].unsqueeze_(0)
+            # print("val_data['gt'][0, 0].unsqueeze(0).shape", val_data['gt'][0].unsqueeze(0).shape)
+            # save_path = f'tmp/{osp.splitext(folder)[0]}'
+            # os.makedirs(save_path, exist_ok=Truie)
+            # save_image_tensor(val_data['gt'][0, 0].unsqueeze(0), f'{save_path}/gt.png')
             self.feed_data(val_data)
             val_data['lq'].squeeze_(0)
             val_data['gt'].squeeze_(0)
 
             self.test()
             visuals = self.get_current_visuals()
+            # save_image_tensor(visuals['result'][0, 0].unsqueeze(0), f'tmp/{folder}_result.png')
 
             # tentative for out of GPU memory
             del self.lq

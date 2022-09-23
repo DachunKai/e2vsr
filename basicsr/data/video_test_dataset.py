@@ -289,6 +289,7 @@ class CEDOnlyFramesTestDataset(data.Dataset):
         super(CEDOnlyFramesTestDataset, self).__init__()
         self.opt = opt
         self.gt_root, self.lq_root = opt['dataroot_gt'], opt['dataroot_lq']
+        self.data_info = {'folder': []}
         # file client (io backend)
         self.file_client = None
         self.io_backend_opt = opt['io_backend']
@@ -325,6 +326,7 @@ class CEDOnlyFramesTestDataset(data.Dataset):
                 self.imgs_lq[osp.join(clip, f'{idx:06d}')] = torch.stack(img2tensor(img_lqs), dim=0)
                 self.imgs_gt[osp.join(clip, f'{idx:06d}')] = torch.stack(img2tensor(img_gts), dim=0)
                 self.folders.append(osp.join(clip, f'{idx:06d}'))
+                self.data_info['folder'].extend([osp.join(clip, f'{idx:06d}')] * len(split_num[idx]))
 
     def __getitem__(self, index):
         folder = self.folders[index]

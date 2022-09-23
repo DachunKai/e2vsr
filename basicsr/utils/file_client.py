@@ -1,4 +1,5 @@
 # Modified from https://github.com/open-mmlab/mmcv/blob/master/mmcv/fileio/file_client.py  # noqa: E501
+import numpy as np
 from abc import ABCMeta, abstractmethod
 import os.path as osp
 
@@ -165,10 +166,10 @@ class Hdf5Backend(BaseStorageBackend):
         img_hrs = []
         for idx in filepath:
             # print(file_lr.attrs['num_imgs'])
-            img_lr = file_lr[f'images/{idx:06d}'][:]
+            img_lr = file_lr[f'images/{idx:06d}'][:].astype(np.float32) / 255.
             img_lrs.append(img_lr)
 
-            img_hr = file_hr[f'images/{idx:06d}'][:]
+            img_hr = file_hr[f'images/{idx:06d}'][:].astype(np.float32) / 255.
             img_hrs.append(img_hr)
 
         return img_lrs, img_hrs

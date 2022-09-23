@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "module": "torch.distributed.launch",
+            "request": "launch",
+            // "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {"CUDA_VISIBLE_DEVICES":"2,3"},
+            //"justMyCode": true,
+            "args": [
+                "--nproc_per_node", "2",
+                "basicsr/train.py",
+                "-opt", "options/train/BasicVSR/train_BasicVSR_CED.yml",
+                "--launcher", "pytorch",
+            ]
+        }
+    ]
+}

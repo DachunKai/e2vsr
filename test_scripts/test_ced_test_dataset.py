@@ -49,11 +49,14 @@ def main(mode='folder'):
         gt = data['gt']
         folder = data['folder']
         print(lq.shape)
+        print(gt.shape)
         print(folder)
-        # for j in range(opt['num_frame']):
-        #     torchvision.utils.save_image(
-        #         lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
-        # torchvision.utils.save_image(gt, f'tmp/gt_{i:03d}.png', nrow=nrow, padding=padding, normalize=False)
+        nrow = 4
+        padding = 0
+        for j in range(16):
+            torchvision.utils.save_image(
+                lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
+        torchvision.utils.save_image(gt, f'tmp/gt_{i:03d}.png', nrow=nrow, padding=padding, normalize=False)
 
 
 if __name__ == '__main__':
