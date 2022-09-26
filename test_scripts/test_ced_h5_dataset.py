@@ -18,7 +18,7 @@ def main(mode='folder'):
     opt['phase'] = 'train'
 
     opt['name'] = 'CED'
-    opt['type'] = 'CEDOnlyFramesDataset'
+    opt['type'] = 'CEDWithEventsDataset'
     # opt['test_mode'] = False
     opt['dataroot_gt'] = 'datasets/CED_h5/HR'
     opt['dataroot_lq'] = 'datasets/CED_h5/LR'
@@ -31,6 +31,8 @@ def main(mode='folder'):
     opt['random_reverse'] = True
     opt['use_hflip'] = True
     opt['use_rot'] = True
+    opt['is_event'] = True
+
 
     opt['use_shuffle'] = True
     opt['num_worker_per_gpu'] = 16
@@ -56,15 +58,16 @@ def main(mode='folder'):
 
         lq = data['lq']
         gt = data['gt']
+        event_lq = data['event_lq']
         key = data['key']
         print(lq.shape)
         print(gt.shape)
-        print(torch.max(lq))
+        print(event_lq.shape)
         print(key)
-        for j in range(opt['num_frame']):
-            torchvision.utils.save_image(
-                lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
-            torchvision.utils.save_image(gt[:, j, :, :, :], f'tmp/gt_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
+        # for j in range(opt['num_frame']):
+        #     torchvision.utils.save_image(
+        #         lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
+        #     torchvision.utils.save_image(gt[:, j, :, :, :], f'tmp/gt_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
 
 
 if __name__ == '__main__':

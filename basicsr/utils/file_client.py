@@ -132,7 +132,7 @@ class LmdbBackend(BaseStorageBackend):
 
 class Hdf5Backend(BaseStorageBackend):
 
-    def __init__(self, h5_paths, client_keys='default', h5_clip='default', **kwargs):
+    def __init__(self, h5_paths, client_keys='default', h5_clip='default', is_event=None, **kwargs):
         try:
             import h5py
         except ImportError:
@@ -149,6 +149,7 @@ class Hdf5Backend(BaseStorageBackend):
                                                         f'but received {len(client_keys)} and {len(self.h5_paths)}.')
 
         self._client = {}
+        self.is_event = is_event
         for client, path in zip(client_keys, self.h5_paths):
             # print("osp.join(path, h5_clip): ", osp.join(path, h5_clip))
             self._client[client] = h5py.File(osp.join(path, h5_clip), 'r')
@@ -171,6 +172,14 @@ class Hdf5Backend(BaseStorageBackend):
 
             img_hr = file_hr[f'images/{idx:06d}'][:].astype(np.float32) / 255.
             img_hrs.append(img_hr)
+
+        if self.is_event:
+            event_lqs = []
+            for idx in filepath[:-1]:
+                event_lq = file_lr[f'voxels/{idx:06d}'][:].astype(np.float32)
+                event_lqs.append(event_lq)
+
+            return img_lrs, img_hrs, event_lqs
 
         return img_lrs, img_hrs
 
