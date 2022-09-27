@@ -1,8 +1,9 @@
 # general settings
-name: 001_baseline_BasicVSR_x2_f64b30_CED_300k_B8G2_wandb
+# name: debug
+name: 002_baseline_BasicVSR_x4_f64b30_CED_300k_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: VideoRecurrentModel
-scale: 2
+scale: 4
 num_gpu: auto  # official: 8 GPUs
 manual_seed: 0
 
@@ -15,7 +16,7 @@ datasets:
     # dataroot_lq: datasets/CED/train_sharp_bicubic_x2
     # (for lmdb)
     dataroot_gt: datasets/CED_h5/HR
-    dataroot_lq: datasets/CED_h5/LR
+    dataroot_lq: datasets/CED_h5/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_train.txt
     # io_backend:
       # type: disk
@@ -24,7 +25,7 @@ datasets:
       type: hdf5
 
     num_frame: 15
-    gt_size: 128
+    gt_size: 256
     interval_list: [1]
     random_reverse: false
     use_hflip: true
@@ -42,7 +43,7 @@ datasets:
     name: CED11
     type: CEDOnlyFramesTestDataset
     dataroot_gt: datasets/CED_h5/HR
-    dataroot_lq: datasets/CED_h5/LR
+    dataroot_lq: datasets/CED_h5/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
 
     # cache_data: true # not needed
@@ -53,7 +54,7 @@ datasets:
 
 # network structures
 network_g:
-  type: BasicVSR_x2
+  type: BasicVSR
   num_feat: 64
   num_block: 30
   spynet_path: experiments/pretrained_models/flownet/spynet_sintel_final-3d2a1287.pth

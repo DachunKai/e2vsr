@@ -242,7 +242,7 @@ def write_h5_worker(pathlist):
     events_paths = sorted(glob(osp.join(input, 'events/*.txt')))
     assert len(img_paths) == len(events_paths) + 1
     for path in events_paths:
-        file.package_voxel(txt_file=path, bins=5)
+        file.package_voxel(txt_file=path, bins=3)
 
     # Step 4: Add meta_info to h5 file
     t0 = timestamp_list[0]

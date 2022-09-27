@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from basicsr.metrics import calculate_metric
 from basicsr.utils import get_root_logger, imwrite, tensor2img
+from basicsr.data.transforms import mod_crop
 from basicsr.utils.dist_util import get_dist_info
 from basicsr.utils.registry import MODEL_REGISTRY
 from .video_base_model import VideoBaseModel
@@ -33,6 +34,7 @@ class VideoRecurrentModel(VideoBaseModel):
 
     def __init__(self, opt):
         super(VideoRecurrentModel, self).__init__(opt)
+        self.scale = opt['scale']
         if self.is_train:
             self.fix_flow_iter = opt['train'].get('fix_flow')
 
@@ -153,6 +155,7 @@ class VideoRecurrentModel(VideoBaseModel):
                     if 'gt' in visuals:
                         gt = visuals['gt'][0, idx, :, :, :]
                         gt_img = tensor2img([gt])  # uint8, bgr
+                        gt_img = mod_crop(gt_img, self.scale)
                         metric_data['img2'] = gt_img
 
                     if save_img:

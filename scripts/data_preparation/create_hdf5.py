@@ -37,7 +37,7 @@ def prepare_h5_keys_ced_hr(folder_path):
     for root, subdir, _ in os.walk(folder_path):
         if 'images' in subdir:
             root_path_list.append(root)
-            out = osp.join('datasets/CED_h5/HR', osp.basename(root) + '.h5')
+            out = osp.join('datasets/CED_h5/Voxel_3/HR', osp.basename(root) + '.h5')
             h5_path_list.append(out)
 
     return root_path_list, h5_path_list
@@ -59,8 +59,8 @@ def prepare_h5_keys_ced_lr(folder_path):
     for root, subdir, _ in os.walk(folder_path):
         if 'images' in subdir:
             root_path_list.append(root)
-            h5_hr_path_list.append(osp.join('datasets/CED_h5/HR', osp.basename(root) + '.h5'))
-            h5_lr_path_list.append(osp.join('datasets/CED_h5/LRx4', osp.basename(root) + '.h5'))
+            h5_hr_path_list.append(osp.join('datasets/CED_h5/Voxel_3/HR', osp.basename(root) + '.h5'))
+            h5_lr_path_list.append(osp.join('datasets/CED_h5/Voxel_3/LRx4', osp.basename(root) + '.h5'))
 
     return root_path_list, h5_hr_path_list, h5_lr_path_list
 
@@ -71,7 +71,7 @@ def create_hdf5_for_ced_lr():
         Remember to modify opt configurations according to your settings.
     """
     # HR
-    folder_path = 'datasets/CED/LRx4'
+    folder_path = 'datasets/CED/LR'
     root_path_list, h5_hr_path_list, h5_lr_path_list = prepare_h5_keys_ced_lr(folder_path)
     make_lr_hdf5_from_folders(root_path_list, h5_hr_path_list, h5_lr_path_list)
 

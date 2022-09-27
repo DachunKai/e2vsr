@@ -60,9 +60,9 @@ def main(mode='folder'):
         gt = data['gt']
         event_lq = data['event_lq']
         key = data['key']
-        print(lq.shape)
-        print(gt.shape)
-        print(event_lq.shape)
+        print("lq.shape: ", lq.shape)
+        print("gt.shape: ", gt.shape)
+        print("event_lq.shape: ", event_lq.shape)
         print(key)
         # for j in range(opt['num_frame']):
         #     torchvision.utils.save_image(
