@@ -71,7 +71,7 @@ def create_hdf5_for_ced_lr():
         Remember to modify opt configurations according to your settings.
     """
     # HR
-    folder_path = 'datasets/CED/LR'
+    folder_path = 'datasets/CED/LRx4'
     root_path_list, h5_hr_path_list, h5_lr_path_list = prepare_h5_keys_ced_lr(folder_path)
     make_lr_hdf5_from_folders(root_path_list, h5_hr_path_list, h5_lr_path_list)
 
