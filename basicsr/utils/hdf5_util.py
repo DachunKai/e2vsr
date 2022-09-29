@@ -131,7 +131,7 @@ class hdf5_packager(packager):
         # check if data is empty
         if data.empty:
             print(f"{txt_file} is empty, will write zero voxel")
-            voxel_dset = self.events_file.create_dataset("voxels/{:06d}".format(event_idx), data=np.zeros((5, 260, 346)), dtype=np.dtype(np.float64), compression="gzip")
+            voxel_dset = self.events_file.create_dataset("voxels/{:06d}".format(event_idx), data=np.zeros((bins, 260, 346)), dtype=np.dtype(np.float64), compression="gzip")
             voxel_dset.attrs['is_empty'] = data.empty
             return
 

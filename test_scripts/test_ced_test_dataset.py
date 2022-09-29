@@ -42,8 +42,8 @@ def main(mode='folder'):
 
     print('start...')
     for i, data in enumerate(data_loader):
-        if i > 10:
-            break
+        # if i > 10:
+        #     break
         # print(i)
 
         lq = data['lq']
@@ -56,6 +56,7 @@ def main(mode='folder'):
         print("folder: ", folder)
         nrow = 4
         padding = 0
+        assert lq.shape[1] == event_lq.shape[1] + 1, "shape error"
         # for j in range(16):
         #     torchvision.utils.save_image(
         #         lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)

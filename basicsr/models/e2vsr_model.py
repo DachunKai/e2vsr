@@ -160,8 +160,9 @@ class E2VSRModel(VideoBaseModel):
             self.feed_data(val_data)
             val_data['lq'].squeeze_(0)
             val_data['gt'].squeeze_(0)
+            val_data['event_lq'].squeeze_(0)
 
-            self.test()
+            self.test(folder)
             visuals = self.get_current_visuals()
 
             # tentative for out of GPU memory
@@ -229,7 +230,7 @@ class E2VSRModel(VideoBaseModel):
             if rank == 0:
                 self._log_validation_metric_values(current_iter, dataset_name, tb_logger)
 
-    def test(self):
+    def test(self, folder):
         n = self.lq.size(1)
         self.net_g.eval()
 
@@ -240,6 +241,7 @@ class E2VSRModel(VideoBaseModel):
             self.lq = torch.cat([self.lq, self.lq.flip(1)], dim=1)
 
         with torch.no_grad():
+            assert self.lq.shape[1] == self.event_lq.shape[1] + 1, f"{folder} shape error, lq.shape is: {self.lq.shape}, event_lq.shape is: {self.event_lq.shape}"
             self.output = self.net_g(self.lq, self.event_lq)
 
         if flip_seq:

@@ -216,6 +216,10 @@ class CEDWithEventsDataset(data.Dataset):
             img_results = img2tensor(img_results)
             img_gts = torch.stack(img_results[len(img_lqs) // 2:], dim=0)
             img_lqs = torch.stack(img_results[:len(img_lqs) // 2], dim=0)
+            for i in range(len(event_lqs)):
+                if event_lqs[i].shape != (3, 64, 64):
+                    print(f"event_lqs[{i}] shape error with shape is: {event_lqs[i].shape}")
+                    print(f"clip_name: {clip_name}, neighbor_list: {neighbor_list}")
             event_lqs = torch.from_numpy(np.stack(event_lqs, axis=0))
 
         else:
