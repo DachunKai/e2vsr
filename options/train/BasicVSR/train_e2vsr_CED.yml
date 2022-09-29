@@ -10,12 +10,12 @@ manual_seed: 0
 datasets:
   train:
     name: CED
-    type: CEDOnlyFramesDataset
+    type: CEDWithEventsDataset
     # dataroot_gt: datasets/CED/train_sharp
     # dataroot_lq: datasets/CED/train_sharp_bicubic_x2
     # (for lmdb)
     dataroot_gt: datasets/CED_h5/Voxel_3/HR
-    dataroot_lq: datasets/CED_h5/Voxel_3/LRx2
+    dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_train.txt
     is_event: true
     # io_backend:
@@ -41,10 +41,12 @@ datasets:
 
   val:
     name: CED11
-    type: CEDOnlyFramesTestDataset
+    type: CEDWithEventsTestDataset
     dataroot_gt: datasets/CED_h5/HR
     dataroot_lq: datasets/CED_h5/LR
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
+    scale: 4
+    is_event: true
 
     # cache_data: true # not needed
     io_backend:

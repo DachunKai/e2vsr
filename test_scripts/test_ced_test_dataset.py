@@ -17,7 +17,7 @@ def main(mode='folder'):
     opt['phase'] = 'val'
 
     opt['name'] = 'CED11'
-    opt['type'] = 'CEDOnlyFramesTestDataset'
+    opt['type'] = 'CEDWithEventsTestDataset'
     # opt['test_mode'] = False
     opt['dataroot_gt'] = 'datasets/CED_h5/Voxel_3/HR'
     opt['dataroot_lq'] = 'datasets/CED_h5/Voxel_3/LRx4'
@@ -27,6 +27,7 @@ def main(mode='folder'):
     opt['num_worker_per_gpu'] = 2
     opt['batch_size_per_gpu'] = 4
     opt['scale'] = 4
+    opt['is_event'] = True
 
     opt['dataset_enlarge_ratio'] = 1
 
@@ -47,10 +48,12 @@ def main(mode='folder'):
 
         lq = data['lq']
         gt = data['gt']
+        event_lq = data['event_lq']
         folder = data['folder']
-        print(lq.shape)
-        print(gt.shape)
-        print(folder)
+        print("lq.shape: ", lq.shape)
+        print("gt.shape: ", gt.shape)
+        print("event_lq.shape: ", event_lq.shape)
+        print("folder: ", folder)
         nrow = 4
         padding = 0
         # for j in range(16):
