@@ -214,6 +214,9 @@ def paired_event_random_crop(img_gts, img_lqs, event_lqs, gt_patch_size, scale, 
     # determine input type: Numpy array or Tensor
     input_type = 'Tensor' if torch.is_tensor(img_gts[0]) else 'Numpy'
 
+    # mod_crop gt image for scale
+    img_gts = [mod_crop(img, scale) for img in img_gts]
+
     if input_type == 'Tensor':
         h_lq, w_lq = img_lqs[0].size()[-2:]
         h_gt, w_gt = img_gts[0].size()[-2:]

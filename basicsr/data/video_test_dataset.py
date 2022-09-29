@@ -6,6 +6,7 @@ from torch.utils import data as data
 from basicsr.data.data_util import duf_downsample, generate_frame_indices, read_img_seq
 from basicsr.utils import get_root_logger, scandir, FileClient, list_of_groups
 from basicsr.utils.img_util import img2tensor
+from basicsr.data.transforms import mod_crop
 from basicsr.utils.registry import DATASET_REGISTRY
 
 
@@ -290,6 +291,7 @@ class CEDOnlyFramesTestDataset(data.Dataset):
         self.opt = opt
         self.gt_root, self.lq_root = opt['dataroot_gt'], opt['dataroot_lq']
         self.data_info = {'folder': []}
+        self.scale = opt['scale']
         # file client (io backend)
         self.file_client = None
         self.io_backend_opt = opt['io_backend']
@@ -323,6 +325,8 @@ class CEDOnlyFramesTestDataset(data.Dataset):
             split_num = list_of_groups(list(range(int(num))), 100)
             for idx in range(len(split_num)):
                 img_lqs, img_gts = self.file_client.get(split_num[idx])
+                # mod_crop gt image for scale
+                img_gts = [mod_crop(img, self.scale) for img in img_gts]
                 self.imgs_lq[osp.join(clip, f'{idx:06d}')] = torch.stack(img2tensor(img_lqs), dim=0)
                 self.imgs_gt[osp.join(clip, f'{idx:06d}')] = torch.stack(img2tensor(img_gts), dim=0)
                 self.folders.append(osp.join(clip, f'{idx:06d}'))

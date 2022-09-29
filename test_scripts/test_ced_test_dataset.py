@@ -19,14 +19,14 @@ def main(mode='folder'):
     opt['name'] = 'CED11'
     opt['type'] = 'CEDOnlyFramesTestDataset'
     # opt['test_mode'] = False
-    opt['dataroot_gt'] = 'datasets/CED_h5/HR'
-    opt['dataroot_lq'] = 'datasets/CED_h5/LR'
+    opt['dataroot_gt'] = 'datasets/CED_h5/Voxel_3/HR'
+    opt['dataroot_lq'] = 'datasets/CED_h5/Voxel_3/LRx4'
     opt['meta_info_file'] = 'basicsr/data/meta_info/meta_info_CED_h5_test.txt'
     opt['io_backend'] = dict(type='hdf5')
 
-    opt['num_worker_per_gpu'] = 16
+    opt['num_worker_per_gpu'] = 2
     opt['batch_size_per_gpu'] = 4
-    opt['scale'] = 2
+    opt['scale'] = 4
 
     opt['dataset_enlarge_ratio'] = 1
 
@@ -53,10 +53,10 @@ def main(mode='folder'):
         print(folder)
         nrow = 4
         padding = 0
-        for j in range(16):
-            torchvision.utils.save_image(
-                lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
-        torchvision.utils.save_image(gt, f'tmp/gt_{i:03d}.png', nrow=nrow, padding=padding, normalize=False)
+        # for j in range(16):
+        #     torchvision.utils.save_image(
+        #         lq[:, j, :, :, :], f'tmp/lq_{i:03d}_frame{j}.png', nrow=nrow, padding=padding, normalize=False)
+        # torchvision.utils.save_image(gt, f'tmp/gt_{i:03d}.png', nrow=nrow, padding=padding, normalize=False)
 
 
 if __name__ == '__main__':
