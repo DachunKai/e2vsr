@@ -153,24 +153,20 @@ class E2VSRModel(VideoBaseModel):
             folder = val_data['folder']
 
             # compute outputs
-            # print("val_data['lq'].shape", val_data['lq'].shape)
             val_data['lq'].unsqueeze_(0)
             val_data['gt'].unsqueeze_(0)
-            # print("val_data['gt'][0, 0].unsqueeze(0).shape", val_data['gt'][0].unsqueeze(0).shape)
-            # save_path = f'tmp/{osp.splitext(folder)[0]}'
-            # os.makedirs(save_path, exist_ok=Truie)
-            # save_image_tensor(val_data['gt'][0, 0].unsqueeze(0), f'{save_path}/gt.png')
+            val_data['event_lq'].unsqueeze_(0)
+
             self.feed_data(val_data)
             val_data['lq'].squeeze_(0)
             val_data['gt'].squeeze_(0)
 
             self.test()
             visuals = self.get_current_visuals()
-            # save_image_tensor(visuals['result'][0, 0].unsqueeze(0), f'tmp/{folder}_result.png')
 
             # tentative for out of GPU memory
             del self.lq
-            del self.output
+            del self.event_lq
             if 'gt' in visuals:
                 del self.gt
             torch.cuda.empty_cache()
@@ -204,7 +200,7 @@ class E2VSRModel(VideoBaseModel):
                                                     f"{name_}_{self.opt['name']}.png")
                             else:  # others
                                 img_path = osp.join(self.opt['path']['visualization'], dataset_name, folder,
-                                                    f"{idx:08d}_{self.opt['name']}.png")
+                                                    f"{idx:06d}_{self.opt['name']}.png")
                             # image name only for REDS dataset
                         imwrite(result_img, img_path)
 
@@ -244,7 +240,7 @@ class E2VSRModel(VideoBaseModel):
             self.lq = torch.cat([self.lq, self.lq.flip(1)], dim=1)
 
         with torch.no_grad():
-            self.output = self.net_g(self.lq)
+            self.output = self.net_g(self.lq, self.event_lq)
 
         if flip_seq:
             output_1 = self.output[:, :n, :, :, :]
@@ -255,3 +251,11 @@ class E2VSRModel(VideoBaseModel):
             self.output = self.output[:, n // 2, :, :, :]
 
         self.net_g.train()
+
+    def get_current_visuals(self):
+        out_dict = OrderedDict()
+        out_dict['lq'] = self.lq.detach().cpu()
+        out_dict['result'] = self.output.detach().cpu()
+        if hasattr(self, 'gt'):
+            out_dict['gt'] = self.gt.detach().cpu()
+        return out_dict
