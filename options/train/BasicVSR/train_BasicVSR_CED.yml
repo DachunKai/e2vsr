@@ -1,6 +1,6 @@
 # general settings
 # name: debug
-name: 003_baseline_BasicVSR_x4_f64b30_CED_300k_B8G2_wandb
+name: 002_baseline_BasicVSR_x4_f64b30_CED_300k_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: VideoRecurrentModel
 scale: 4
@@ -15,8 +15,8 @@ datasets:
     # dataroot_gt: datasets/CED/train_sharp
     # dataroot_lq: datasets/CED/train_sharp_bicubic_x2
     # (for lmdb)
-    dataroot_gt: datasets/CED_h5/Voxel_5/HR
-    dataroot_lq: datasets/CED_h5/Voxel_5/LRx4
+    dataroot_gt: datasets/CED_h5/Voxel_3/HR
+    dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_train.txt
     # io_backend:
       # type: disk
@@ -42,8 +42,8 @@ datasets:
   val:
     name: CED11
     type: CEDOnlyFramesTestDataset
-    dataroot_gt: datasets/CED_h5/Voxel_5/HR
-    dataroot_lq: datasets/CED_h5/Voxel_5/LRx4
+    dataroot_gt: datasets/CED_h5/Voxel_3/HR
+    dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
 
     # cache_data: true # not needed
