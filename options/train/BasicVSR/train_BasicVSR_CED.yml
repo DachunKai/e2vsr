@@ -1,6 +1,6 @@
 # general settings
-# name: debug
-name: 002_baseline_BasicVSR_x4_f64b30_CED_300k_B8G2_wandb
+name: debug
+# name: 002_baseline_BasicVSR_x4_f64b30_CED_300k_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: VideoRecurrentModel
 scale: 4

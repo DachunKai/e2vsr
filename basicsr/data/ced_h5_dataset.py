@@ -123,7 +123,7 @@ class CEDWithEventsDataset(data.Dataset):
     keys[0] = 'simple_flowers_infrared.h5/000000'
     return:
         data['lq']: [T, C, H, W]
-        data['gt']: [T, C, 2H, 2W]
+        data['gt']: [T, C, 4H, 4W]
         data['event_lq']: [T-1, C, H, W]
         data['key']: str means start index for sequences
     """
