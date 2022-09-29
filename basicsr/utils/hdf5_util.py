@@ -323,7 +323,7 @@ def write_lr_h5_worker(pathlist):
     for i in range(num_voxels):
         idx = str(i).zfill(6)
         voxel_ex = torch.from_numpy(file2[f'voxels/{idx}'][:]).unsqueeze(0)
-        voxel_lr = torch.nn.functional.interpolate(input = voxel_ex, scale_factor = 0.5, mode = 'bicubic').squeeze(0).numpy()
+        voxel_lr = torch.nn.functional.interpolate(input = voxel_ex, scale_factor = 0.25, mode = 'bicubic').squeeze(0).numpy()
         is_empty = file2[f'voxels/{idx}'].attrs['is_empty']
         file.package_lr_voxel(np_voxel=voxel_lr, idx = i, is_empty=is_empty)
 
@@ -331,7 +331,7 @@ def write_lr_h5_worker(pathlist):
     t0 = timestamp_list[0]
     tk = timestamp_list[-1]
     duration = float(tk) - float(t0)
-    sensor_size = (130, 173)
+    sensor_size = (65, 86)
     num_imgs = len(img_paths)
     file.add_metadata(duration, t0, tk, num_imgs, num_voxels, sensor_size)
     file.close()
