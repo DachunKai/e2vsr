@@ -2,7 +2,7 @@
 name: 003_e2vsr_x4_f64b30_CED_300k_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: E2VSRModel
-scale: 2
+scale: 4
 num_gpu: auto  # official: 8 GPUs
 manual_seed: 0
 
@@ -15,7 +15,7 @@ datasets:
     # dataroot_lq: datasets/CED/train_sharp_bicubic_x2
     # (for lmdb)
     dataroot_gt: datasets/CED_h5/Voxel_3/HR
-    dataroot_lq: datasets/CED_h5/Voxel_3/LRx2
+    dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_train.txt
     is_event: true
     # io_backend:
@@ -25,7 +25,7 @@ datasets:
       type: hdf5
 
     num_frame: 15
-    gt_size: 128
+    gt_size: 256
     interval_list: [1]
     random_reverse: false
     use_hflip: true
@@ -43,9 +43,9 @@ datasets:
     name: CED11
     type: CEDWithEventsTestDataset
     dataroot_gt: datasets/CED_h5/Voxel_3/HR
-    dataroot_lq: datasets/CED_h5/Voxel_3/LRx2
+    dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
-    scale: 2
+    scale: 4
     is_event: true
 
     # cache_data: true # not needed
@@ -56,7 +56,7 @@ datasets:
 
 # network structures
 network_g:
-  type: E2VSR_x2
+  type: E2VSR
   num_feat: 64
   num_block: 30
   spynet_path: experiments/pretrained_models/flownet/spynet_sintel_final-3d2a1287.pth

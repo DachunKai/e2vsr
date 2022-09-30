@@ -1,5 +1,5 @@
 # general settings
-name: 003_e2vsr_x4_f64b30_CED_300k_B8G2_wandb
+name: 003_e2vsr_x2_f64b30_CED_300k_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: E2VSRModel
 scale: 2
