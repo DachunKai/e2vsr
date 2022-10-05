@@ -1,3 +1,4 @@
+from cmath import isnan
 import os
 import torch
 from collections import Counter
@@ -41,6 +42,12 @@ class E2VSRModel(VideoBaseModel):
 
     def feed_data(self, data):
         self.lq = data['lq'].to(self.device)
+        if 'key' in data:
+            self.key = data['key']
+            # self.neighbor_list = data['neighbor_list']
+            # rank, _ = get_dist_info()
+            # if rank == 0:
+            #     print("current key: ", self.key, ' ', "neighbor_list: ", self.neighbor_list)
         if 'gt' in data:
             self.gt = data['gt'].to(self.device)
         if 'event_lq' in data:
@@ -96,6 +103,12 @@ class E2VSRModel(VideoBaseModel):
         # pixel loss
         if self.cri_pix:
             l_pix = self.cri_pix(self.output, self.gt)
+            if torch.isnan(l_pix).any():
+                print("self.key: ", self.key)
+                print("self.output.shape: ", self.output.shape, '\t', "self.gt.shape: ", self.gt.shape)
+                print("torch.isnan(self.output).any(): ", torch.isnan(self.output).any())
+                print("torch.isnan(self.gt).any(): ", torch.isnan(self.gt).any())
+                raise ValueError(f"l_pix is nan. Please check.")
             l_total += l_pix
             loss_dict['l_pix'] = l_pix
         # perceptual loss

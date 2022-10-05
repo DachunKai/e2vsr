@@ -14,9 +14,10 @@ datasets:
     # dataroot_gt: datasets/CED/train_sharp
     # dataroot_lq: datasets/CED/train_sharp_bicubic_x2
     # (for lmdb)
-    dataroot_gt: datasets/CED_h5/Voxel_3/HR
-    dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
-    meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_train.txt
+    dataroot_gt: datasets/CED_3_h5/Voxel_3/HR
+    dataroot_lq: datasets/CED_3_h5/Voxel_3/LRx4
+    meta_info_file: basicsr/data/meta_info/meta_info_CED_3_h5_train.txt
+    # meta_info_file: basicsr/data/meta_info/debug_train_split.txt
     is_event: true
     # io_backend:
       # type: disk
@@ -32,7 +33,7 @@ datasets:
     use_rot: true
 
     # data loader
-    use_shuffle: true
+    use_shuffle: false
     num_worker_per_gpu: 6
     batch_size_per_gpu: 4
     dataset_enlarge_ratio: 200
@@ -42,9 +43,9 @@ datasets:
   val:
     name: CED11
     type: CEDWithEventsTestDataset
-    dataroot_gt: datasets/CED_h5/Voxel_3/HR
-    dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
-    meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
+    dataroot_gt: datasets/CED_3_h5/Voxel_3/HR
+    dataroot_lq: datasets/CED_3_h5/Voxel_3/LRx4
+    meta_info_file: basicsr/data/meta_info/meta_info_CED_3_h5_test.txt
     scale: 4
     is_event: true
 

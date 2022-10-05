@@ -227,4 +227,4 @@ class CEDWithEventsDataset(data.Dataset):
             img_lqs = torch.stack(img2tensor(img_lqs), dim=0)
             img_gts = torch.stack(img2tensor(img_gts), dim=0)
 
-        return {'lq': img_lqs, 'gt': img_gts, 'event_lq': event_lqs, 'key': key}
+        return {'lq': img_lqs, 'gt': img_gts, 'event_lq': event_lqs, 'key': key, 'neighbor_list': neighbor_list}

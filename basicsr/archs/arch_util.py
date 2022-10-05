@@ -391,7 +391,7 @@ class Mutual_Attention(nn.Module):
 
         q = self.q(x) # image
         k = self.k(y) # event
-        v = self.v(y) # event
+        v = self.v(x) # image
 
         q = rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
         k = rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.num_heads)

@@ -1,5 +1,5 @@
 # general settings
-name: 003_e2vsr_x2_f64b30_CED_300k_B8G2_wandb
+name: 004_e2vsr_x2_f64b30_CED_300k_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: E2VSRModel
 scale: 2
@@ -110,7 +110,7 @@ logger:
   save_checkpoint_freq: !!float 1e4
   use_tb_logger: true
   wandb:
-    project: ~
+    project: e2vsr
     resume_id: ~
 
 # dist training settings

@@ -531,9 +531,10 @@ def voxel_normalization(voxel):
 
     ones = torch.ones_like(voxel)
 
-    normed_voxel = torch.where(voxel >= non_zero_voxel[norm_idx], ones, voxel)
-    normed_voxel = torch.where(voxel <= -non_zero_voxel[norm_idx], -ones, voxel)
+    # squeeze_voxel, indices = torch.sort(voxel.view(-1, 1).squeeze(1))
     normed_voxel = torch.where(torch.abs(voxel) < non_zero_voxel[norm_idx], voxel / non_zero_voxel[norm_idx], voxel)
+    normed_voxel = torch.where(normed_voxel >= non_zero_voxel[norm_idx], ones, normed_voxel)
+    normed_voxel = torch.where(normed_voxel <= -non_zero_voxel[norm_idx], -ones, normed_voxel)
 
     return normed_voxel
 

@@ -151,3 +151,12 @@ def list_of_groups(list_info, per_list_len):
     count = len(list_info) % per_list_len
     end_list.append(list_info[-count:]) if count !=0 else end_list
     return end_list
+
+def check_is_empty(hr_root, clip_name, idx):
+    """
+    idx is img idx, same as voxel idx
+    """
+    import h5py
+    import os.path as osp
+    file = h5py.File(osp.join(hr_root, clip_name), 'r')
+    return file[f'voxels/{idx:06d}'].attrs['is_empty']
