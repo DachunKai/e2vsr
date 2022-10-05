@@ -111,7 +111,7 @@ logger:
   save_checkpoint_freq: !!float 1e4
   use_tb_logger: true
   wandb:
-    project: ~
+    project: e2vsr
     resume_id: ~
 
 # dist training settings
