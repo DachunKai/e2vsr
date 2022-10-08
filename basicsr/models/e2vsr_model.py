@@ -274,3 +274,124 @@ class E2VSRModel(VideoBaseModel):
         if hasattr(self, 'gt'):
             out_dict['gt'] = self.gt.detach().cpu()
         return out_dict
+
+    def _log_validation_metric_values(self, current_iter, dataset_name, tb_logger):
+        # ----------------- calculate the average values for each folder, and for each metric  ----------------- #
+        # average all frames for each sub-folder
+        # metric_results_avg is a dict:{
+        #    folder example: 'people_dynamic_wave/split0'
+        #    'folder1': tensor (len(metrics)),
+        #    'folder2': tensor (len(metrics))
+        # }
+        metric_results_avg = {
+            folder: torch.mean(tensor, dim=0).cpu()
+            for (folder, tensor) in self.metric_results.items()
+        }
+
+        # folder_len_dict is a dict: {
+        #    count each folder frames number
+        #    folder example is: 'people_dynamic_wave/split0'
+        #    'folder1': int
+        #    'folder2': int
+        # }
+        # cnt_folder_split is a dict: {
+        #    count each root_folder split number
+        #    root_folder example: indoors_foosball_2
+        #    'root_folder1': int(759)
+        #    'root_folder2': int
+        # }
+        if dataset_name.lower() == 'ced11':
+            folder_len_dict = {}
+            cnt_folder_split = {}
+            for (folder, tensor) in self.metric_results.items():
+                folder_len_dict[folder] = tensor.size(0)
+                cnt_folder_split[osp.dirname(folder)] = 0
+            # print("folder_len_dict: ", folder_len_dict)
+
+            for folder, length in folder_len_dict.items():
+                cnt_folder_split[osp.dirname(folder)] += length
+        else:
+            raise NotImplementedError()
+
+        # total_avg_results is a dict: {
+        #    'metric1': float,
+        #    'metric2': float
+        # }
+        total_avg_results = {metric: 0 for metric in self.opt['val']['metrics'].keys()}
+        for folder, tensor in metric_results_avg.items():
+            for metric_idx, metric in enumerate(total_avg_results.keys()):
+                total_avg_results[metric] += tensor[metric_idx].item() * folder_len_dict[folder]
+
+        total_samples_length = 0
+        for folder, length in folder_len_dict.items():
+            total_samples_length += length
+        # average among folders
+        for metric in total_avg_results.keys():
+            total_avg_results[metric] /= total_samples_length
+            # update the best metric result
+            self._update_best_metric_result(dataset_name, metric, total_avg_results[metric], current_iter)
+
+        # ------------------------------------------ log the metric ------------------------------------------ #
+        log_str = f'Validation {dataset_name}\n'
+
+        if dataset_name.lower() == 'ced11':
+            # name_turple is a turple:(
+            #    root_folder example: indoors_foosball_2
+            #    'root_folder1': str,
+            #    'root_folder2': str
+            # )
+            name_turple = set(osp.dirname(temp) for temp in list(self.metric_results.keys()))
+            # print("name_turple: ", name_turple, " ", "len(name_turple)", len(name_turple))
+            # avg_metric_dict and sum_folder_split is a dict: {
+            #   'metric1': dict{
+            #          'root_folder1': float
+            #          'root_folder2': float
+            #       }
+            #   'metric2': dict{
+            #          'root_folder1': float
+            #          'root_folder2': float
+            #       }i
+            # }
+            avg_metric_dict = {metric: {} for metric in self.opt['val']['metrics'].keys()}
+            sum_folder_split = {metric: {} for metric in self.opt['val']['metrics'].keys()}
+            for _, folder_dict in avg_metric_dict.items():
+                for name in name_turple:
+                    folder_dict[name] = 0.0
+            for _, folder_dict in sum_folder_split.items():
+                for name in name_turple:
+                    folder_dict[name] = 0
+
+            for metric_idx, (metric, value) in enumerate(total_avg_results.items()):
+                log_str += f'\t # {metric}: {value:.4f}'
+                for folder, tensor in metric_results_avg.items():
+                    # sum_folder_split[metric][osp.dirname(folder)] += tensor[metric_idx].item() * folder_len_dict[folder]
+                    sum_folder_split[metric][osp.dirname(folder)] += tensor[metric_idx].item() * folder_len_dict[folder]
+
+            # print("sum_folder_split: ", sum_folder_split)
+            for metric, values in sum_folder_split.items():
+                for name in name_turple:
+                    # print(f"value[{name}]: ", values[name], " ", f"cnt_folder_split[{name}]: ", cnt_folder_split[name])
+                    avg_metric_dict[metric][name] = values[name] / cnt_folder_split[name]
+                    log_str += f'\n\t # {name}: {avg_metric_dict[metric][name]:.4f}'
+                if hasattr(self, 'best_metric_results'):
+                    log_str += (f'\n\t Best: {self.best_metric_results[dataset_name][metric]["val"]:.4f} @ '
+                            f'{self.best_metric_results[dataset_name][metric]["iter"]} iter')
+
+        else:
+            for metric_idx, (metric, value) in enumerate(total_avg_results.items()):
+                log_str += f'\t # {metric}: {value:.4f}'
+                for folder, tensor in metric_results_avg.items():
+                    log_str += f'\t # {folder}: {tensor[metric_idx].item():.4f}'
+                if hasattr(self, 'best_metric_results'):
+                    log_str += (f'\n\t    Best: {self.best_metric_results[dataset_name][metric]["val"]:.4f} @ '
+                                f'{self.best_metric_results[dataset_name][metric]["iter"]} iter')
+                log_str += '\n'
+
+        logger = get_root_logger()
+        logger.info(log_str)
+        if tb_logger:
+            for metric_idx, (metric, value) in enumerate(total_avg_results.items()):
+                tb_logger.add_scalar(f'metrics/{metric}', value, current_iter)
+                for metric, root_result in avg_metric_dict.items():
+                    for name in name_turple:
+                        tb_logger.add_scalar(f'metrics/{metric}/{name}', root_result[f'{name}'].item(), current_iter)

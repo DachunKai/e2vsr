@@ -2,7 +2,7 @@
 
 GPUS=$1
 CONFIG=$2
-PORT=${PORT:-4320}
+PORT=${PORT:-9997}
 
 # usage
 if [ $# -lt 2 ] ;then
