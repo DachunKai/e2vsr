@@ -319,7 +319,7 @@ class VideoRecurrentModel(VideoBaseModel):
                 for name in name_turple:
                     # print(f"value[{name}]: ", values[name], " ", f"cnt_folder_split[{name}]: ", cnt_folder_split[name])
                     avg_metric_dict[metric][name] = values[name] / cnt_folder_split[name]
-                    log_str += f'\n\t # {name}: {avg_metric_dict[metric][name]:.4f}'
+                    log_str += f'\n\t # {osp.splitext(name)[0]}: {avg_metric_dict[metric][name]:.4f}'
                 if hasattr(self, 'best_metric_results'):
                     log_str += (f'\n\t Best: {self.best_metric_results[dataset_name][metric]["val"]:.4f} @ '
                             f'{self.best_metric_results[dataset_name][metric]["iter"]} iter')
@@ -341,4 +341,4 @@ class VideoRecurrentModel(VideoBaseModel):
                 tb_logger.add_scalar(f'metrics/{metric}', value, current_iter)
                 for metric, root_result in avg_metric_dict.items():
                     for name in name_turple:
-                        tb_logger.add_scalar(f'metrics/{metric}/{name}', root_result[f'{name}'].item(), current_iter)
+                        tb_logger.add_scalar(f'metrics/{metric}/{osp.splitext(name)[0]}', root_result[f'{name}'], current_iter)
