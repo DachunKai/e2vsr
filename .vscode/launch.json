@@ -16,7 +16,7 @@
             "args": [
                 "--nproc_per_node", "2",
                 "basicsr/train.py",
-                "-opt", "options/train/BasicVSR/train_e2vsr_CED.yml",
+                "-opt", "options/train/BasicVSR/train_e2vsr_x2_CED.yml",
                 "--launcher", "pytorch",
             ]
         }

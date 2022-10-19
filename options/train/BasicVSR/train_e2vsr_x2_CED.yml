@@ -1,6 +1,6 @@
 # general settings
-name: 004_e2vsr_x2_f64b30_CED_300k_B8G2_wandb
-# name: debug_test_BasicVSR_CED
+# name: 004_e2vsr_x2_f64b30_CED_300k_B8G2_wandb
+name: debug
 model_type: E2VSRModel
 scale: 2
 num_gpu: auto  # official: 8 GPUs
