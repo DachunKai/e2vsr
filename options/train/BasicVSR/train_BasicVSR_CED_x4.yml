@@ -15,8 +15,8 @@ datasets:
     # dataroot_gt: datasets/CED/train_sharp
     # dataroot_lq: datasets/CED/train_sharp_bicubic_x2
     # (for lmdb)
-    dataroot_gt: datasets/CED_3_h5/Voxel_3/HR
-    dataroot_lq: datasets/CED_3_h5/Voxel_3/LRx4
+    dataroot_gt: datasets/CED_h5/Voxel_3/HR
+    dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_3_h5_train.txt
     # io_backend:
       # type: disk
