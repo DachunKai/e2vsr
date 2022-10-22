@@ -12,11 +12,11 @@ from basicsr.utils.registry import DATASET_REGISTRY
 
 
 @DATASET_REGISTRY.register()
-class CEDOnlyFramesDataset(data.Dataset):
-    """CED dataset for training recurrent networks with only frames
+class Vimeo90KOnlyFramesDataset(data.Dataset):
+    """Vimeo90k septuplet dataset for training recurrent networks with only frames
 
-    keys is generated from meta_info_CED_h5_train.txt, example:
-    keys[0] = 'simple_flowers_infrared.h5/000000'
+    keys is generated from meta_info_vimeo_h5_train.txt, example:
+    keys[0] = '00001_0001.h5'
 
     """
 
@@ -24,24 +24,23 @@ class CEDOnlyFramesDataset(data.Dataset):
         super().__init__()
         self.opt = opt
         self.gt_root, self.lq_root = opt['dataroot_gt'], opt['dataroot_lq']
-        self.num_frame = opt['num_frame']
 
         self.keys = []
-        self.frame_num_dict = {}
         self.phase = opt['phase']
 
         # train/test will have different meta_info_file
         with open(opt['meta_info_file'], 'r') as fin:
-            for line in fin:
-                name, num = line.split(' ')
-                self.keys.extend([f'{name}/{i:06d}' for i in range(int(num))])
-                self.frame_num_dict[name] = num.strip()
+            self.keys = [line.split(' ')[0] for line in fin]
         fin.close()
+        if self.phase == 'train':
+            self.num_frame = 13
+        else:
+            self.num_frame = 7
+        self.neighbor_list = [i for i in range(self.num_frame)]
 
         ## So here, we can get self.keys(list), self.frame_num(dict)
         ## Example:
-        ## self.keys[0] = 'simple_flowers_infrared.h5/000000
-        ## self.frame_num['simple_flowers_infrared.h5'] = '1039'
+        ## self.keys[0] = '00001_0001.h5'
 
         # file client(io backend)
         self.file_client = None
@@ -69,29 +68,16 @@ class CEDOnlyFramesDataset(data.Dataset):
         scale = self.opt['scale']
         gt_size = self.opt['gt_size']
         key = self.keys[index]
-        clip_name, frame_name = osp.dirname(key), osp.basename(key)
-        self.io_backend_opt['h5_clip'] = clip_name
+        self.io_backend_opt['h5_clip'] = key
         # if self.file_client is None:
-        self.file_client = FileClient(
-            self.io_backend_opt['type'],
-            **self.io_backend_opt
-            )
-        # determine the neighboring frames
-
-        interval = random.choice(self.interval_list)
-        start_frame_idx = int(frame_name)
-        clip_num = int(self.frame_num_dict[clip_name])
-        if start_frame_idx > clip_num - self.num_frame * interval:
-            start_frame_idx = random.randint(0, clip_num - self.num_frame * interval)
-        end_frame_idx = start_frame_idx + self.num_frame * interval
-        neighbor_list = list(range(start_frame_idx, end_frame_idx, interval))
+        self.file_client = FileClient(self.io_backend_opt['type'], **self.io_backend_opt)
 
         # random reverse
         if self.random_reverse and random.random() < 0.5:
-            neighbor_list.reverse()
+            self.neighbor_list.reverse()
 
         # print("clip_name: ", clip_name, " neighbor_list: ", neighbor_list)
-        img_lqs, img_gts = self.file_client.get(neighbor_list)
+        img_lqs, img_gts = self.file_client.get(self.neighbor_list)
 
         if self.phase == 'train':
             # train
@@ -115,43 +101,40 @@ class CEDOnlyFramesDataset(data.Dataset):
 
 
 @DATASET_REGISTRY.register()
-class CEDWithEventsDataset(data.Dataset):
+class Vimeo90kWithEventsDataset(data.Dataset):
+    """Vimeo90k dataset for training recurrent networks with events
 
-    """CED dataset for training recurrent networks with events
-
-    keys is generated from CED_h5_train.txt, example:
-    keys[0] = 'simple_flowers_infrared.h5/000000'
+    keys is generated from meta_info_vimeo_h5_train.txt, example:
+    keys[0] = '00001_0001.h5'
     return:
         data['lq']: [T, C, H, W]
         data['gt']: [T, C, 4H, 4W]
         data['event_lq']: [T-1, C, H, W]
-        data['key']: str means start index for sequences
+        data['key']: str means clip hdf5 name
     """
 
     def __init__(self, opt):
         super().__init__()
         self.opt = opt
         self.gt_root, self.lq_root = opt['dataroot_gt'], opt['dataroot_lq']
-        self.num_frame = opt['num_frame']
-        self.num_event = self.num_frame - 1
 
         self.keys = []
-        self.frame_num_dict = {}
         self.phase = opt['phase']
         self.is_event = opt['is_event']
 
         # train/test will have different meta_info_file
         with open(opt['meta_info_file'], 'r') as fin:
-            for line in fin:
-                name, num = line.split(' ')
-                self.keys.extend([f'{name}/{i:06d}' for i in range(int(num))])
-                self.frame_num_dict[name] = num.strip()
+            self.keys = [line.split(' ')[0] for line in fin]
         fin.close()
+        if self.phase == 'train':
+            self.num_frame = 13
+        else:
+            self.num_frame = 7
+        self.neighbor_list = [i for i in range(self.num_frame)]
 
-        ## So here, we can get self.keys(list), self.frame_num(dict)
+        ## So here, we can get self.keys(list)
         ## Example:
-        ## self.keys[0] = 'simple_flowers_infrared.h5/000000
-        ## self.frame_num['simple_flowers_infrared.h5'] = '1039'
+        ## self.keys[0] = '00001_0001.h5'
 
         # file client(io backend)
         self.file_client = None
@@ -180,29 +163,15 @@ class CEDWithEventsDataset(data.Dataset):
         scale = self.opt['scale']
         gt_size = self.opt['gt_size']
         key = self.keys[index]
-        clip_name, frame_name = osp.dirname(key), osp.basename(key)
-        self.io_backend_opt['h5_clip'] = clip_name
+        self.io_backend_opt['h5_clip'] = key
         # if self.file_client is None:
-        self.file_client = FileClient(
-            self.io_backend_opt['type'],
-            **self.io_backend_opt
-            )
-        # determine the neighboring frames
-
-        interval = random.choice(self.interval_list)
-        start_frame_idx = int(frame_name)
-        clip_num = int(self.frame_num_dict[clip_name])
-        if start_frame_idx > clip_num - self.num_frame * interval:
-            start_frame_idx = random.randint(0, clip_num - self.num_frame * interval)
-        end_frame_idx = start_frame_idx + self.num_frame * interval
-        neighbor_list = list(range(start_frame_idx, end_frame_idx, interval))
+        self.file_client = FileClient(self.io_backend_opt['type'], **self.io_backend_opt)
 
         # random reverse
         if self.random_reverse and random.random() < 0.5:
-            neighbor_list.reverse()
+            self.neighbor_list.reverse()
 
-        # print("clip_name: ", clip_name, " neighbor_list: ", neighbor_list)
-        img_lqs, img_gts, event_lqs = self.file_client.get(neighbor_list)
+        img_lqs, img_gts, event_lqs = self.file_client.get(self.neighbor_list)
 
         if self.phase == 'train':
             # train
@@ -219,7 +188,7 @@ class CEDWithEventsDataset(data.Dataset):
             for i in range(len(event_lqs)):
                 if event_lqs[i].shape != (3, 64, 64):
                     print(f"event_lqs[{i}] shape error with shape is: {event_lqs[i].shape}")
-                    print(f"clip_name: {clip_name}, neighbor_list: {neighbor_list}")
+                    print(f"clip_name: {key}, neighbor_list: {self.neighbor_list}")
             event_lqs = torch.from_numpy(np.stack(event_lqs, axis=0))
 
         else:

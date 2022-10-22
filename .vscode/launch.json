@@ -7,18 +7,18 @@
         {
             "name": "Python: Current File",
             "type": "python",
-            "module": "torch.distributed.launch",
+            // "module": "torch.distributed.launch",
             "request": "launch",
-            // "program": "${file}",
+            "program": "${file}",
             "console": "integratedTerminal",
-            "env": {"CUDA_VISIBLE_DEVICES":"0,1"},
-            "justMyCode": true,
-            "args": [
-                "--nproc_per_node", "2",
-                "basicsr/train.py",
-                "-opt", "options/train/BasicVSR/train_e2vsr_x2_CED.yml",
-                "--launcher", "pytorch",
-            ]
+            // "env": {"CUDA_VISIBLE_DEVICES":"0,1"},
+            // "justMyCode": true,
+            // "args": [
+            //     "--nproc_per_node", "2",
+            //     "basicsr/train.py",
+            //     "-opt", "options/train/BasicVSR/train_e2vsr_x2_CED.yml",
+            //     "--launcher", "pytorch",
+            // ]
         }
     ]
 }

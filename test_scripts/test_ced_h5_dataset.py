@@ -15,14 +15,14 @@ def main(mode='folder'):
     """
     opt = {}
     opt['dist'] = False
-    opt['phase'] = 'train'
+    opt['phase'] = 'val'
 
     opt['name'] = 'CED'
     opt['type'] = 'CEDWithEventsDataset'
     # opt['test_mode'] = False
     opt['dataroot_gt'] = 'datasets/CED_h5/Voxel_3/HR'
     opt['dataroot_lq'] = 'datasets/CED_h5/Voxel_3/LRx4'
-    opt['meta_info_file'] = 'basicsr/data/meta_info/meta_info_CED_h5_train.txt'
+    opt['meta_info_file'] = 'basicsr/data/meta_info/meta_info_CED_h5_test.txt'
     opt['io_backend'] = dict(type='hdf5')
 
     opt['num_frame'] = 5
@@ -47,8 +47,8 @@ def main(mode='folder'):
     print(len(dataset))
     data_loader = build_dataloader(dataset, opt, num_gpu=0, dist=opt['dist'], sampler=None)
 
-    nrow = int(math.sqrt(opt['batch_size_per_gpu']))
-    padding = 2 if opt['phase'] == 'train' else 0
+    # nrow = int(math.sqrt(opt['batch_size_per_gpu']))
+    # padding = 2 if opt['phase'] == 'train' else 0
 
     print('start...')
     for i, data in enumerate(data_loader):
