@@ -18,11 +18,14 @@ basicsr.egg-info/top_level.txt
 basicsr/archs/__init__.py
 basicsr/archs/arch_util.py
 basicsr/archs/basicvsr_arch.py
+basicsr/archs/basicvsr_x2_arch.py
 basicsr/archs/basicvsrpp_arch.py
 basicsr/archs/dfdnet_arch.py
 basicsr/archs/dfdnet_util.py
 basicsr/archs/discriminator_arch.py
 basicsr/archs/duf_arch.py
+basicsr/archs/e2vsr_arch.py
+basicsr/archs/e2vsr_x2_arch.py
 basicsr/archs/ecbsr_arch.py
 basicsr/archs/edsr_arch.py
 basicsr/archs/edvr_arch.py
@@ -41,6 +44,8 @@ basicsr/archs/swinir_arch.py
 basicsr/archs/tof_arch.py
 basicsr/archs/vgg_arch.py
 basicsr/data/__init__.py
+basicsr/data/ced_dataset.py
+basicsr/data/ced_h5_dataset.py
 basicsr/data/data_sampler.py
 basicsr/data/data_util.py
 basicsr/data/degradations.py
@@ -54,6 +59,7 @@ basicsr/data/single_image_dataset.py
 basicsr/data/transforms.py
 basicsr/data/video_test_dataset.py
 basicsr/data/vimeo90k_dataset.py
+basicsr/data/vimeo_h5_dataset.py
 basicsr/losses/__init__.py
 basicsr/losses/basic_loss.py
 basicsr/losses/gan_loss.py
@@ -66,6 +72,7 @@ basicsr/metrics/niqe_pris_params.npz
 basicsr/metrics/psnr_ssim.py
 basicsr/models/__init__.py
 basicsr/models/base_model.py
+basicsr/models/e2vsr_model.py
 basicsr/models/edvr_model.py
 basicsr/models/esrgan_model.py
 basicsr/models/hifacegan_model.py
@@ -99,8 +106,10 @@ basicsr/utils/color_util.py
 basicsr/utils/diffjpeg.py
 basicsr/utils/dist_util.py
 basicsr/utils/download_util.py
+basicsr/utils/event_utils.py
 basicsr/utils/file_client.py
 basicsr/utils/flow_util.py
+basicsr/utils/hdf5_util.py
 basicsr/utils/img_process_util.py
 basicsr/utils/img_util.py
 basicsr/utils/lmdb_util.py
