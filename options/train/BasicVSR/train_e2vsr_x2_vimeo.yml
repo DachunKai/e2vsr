@@ -1,10 +1,10 @@
 # general settings
-# name: debug
+name: debug
 # name: BasicVSR_vimeo90k_BIx4
-name: 013_BasicVSR_x4_vimeo_300k_f64b30_B8G2_wandb
+# name: 014_BasicVSR_x2_vimeo_300k_f64b30_B8G2_wandb
 # name: debug_test_BasicVSR_CED
-model_type: VideoRecurrentModel
-scale: 4
+model_type: E2VSRModel
+scale: 2
 num_gpu: auto  # official: 8 GPUs
 manual_seed: 0
 
@@ -12,13 +12,14 @@ manual_seed: 0
 datasets:
   train:
     name: Vimeo90K
-    type: Vimeo90KOnlyFramesDataset
+    type: Vimeo90kWithEventsDataset
     # dataroot_gt: datasets/CED/train_sharp
     # dataroot_lq: datasets/CED/train_sharp_bicubic_x2
     # (for lmdb)
     dataroot_gt: datasets/vimeo_septuplet_h5/Voxel_3/HR
-    dataroot_lq: datasets/vimeo_septuplet_h5/Voxel_3/LRx4
+    dataroot_lq: datasets/vimeo_septuplet_h5/Voxel_3/LRx2
     meta_info_file: basicsr/data/meta_info/meta_info_vimeo_h5_train.txt
+    is_event: true
     # io_backend:
       # type: disk
     # test_mode: False
@@ -26,7 +27,7 @@ datasets:
       type: hdf5
 
     num_frame: -1
-    gt_size: 256
+    gt_size: 128
     interval_list: [1]
     random_reverse: false
     use_hflip: true
@@ -35,18 +36,19 @@ datasets:
 
     # data loader
     use_shuffle: true
-    num_worker_per_gpu: 6
-    batch_size_per_gpu: 4
+    num_worker_per_gpu: 0
+    batch_size_per_gpu: 2
     dataset_enlarge_ratio: 200
     prefetch_mode: cuda
     pin_memory: true
 
   val:
     name: Vid4
-    type: Vid4onlyFramesTestDataset
+    type: Vid4WithEventsTestDataset
     dataroot_gt: datasets/Vid4_h5/Voxel_3/HR
-    dataroot_lq: datasets/Vid4_h5/Voxel_3/LRx4
+    dataroot_lq: datasets/Vid4_h5/Voxel_3/LRx2
     meta_info_file: basicsr/data/meta_info/meta_info_Vid4_h5.txt
+    is_event: true
     scale: 2
 
     # cache_data: true # not needed
@@ -57,7 +59,7 @@ datasets:
 
 # network structures
 network_g:
-  type: BasicVSR
+  type: E2VSR_x2
   num_feat: 64
   num_block: 30
   spynet_path: experiments/pretrained_models/flownet/spynet_sintel_final-3d2a1287.pth

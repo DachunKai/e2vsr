@@ -255,7 +255,7 @@ class E2VSRModel(VideoBaseModel):
 
         with torch.no_grad():
             assert self.lq.shape[1] == self.event_lq.shape[1] + 1, f"{folder} shape error, lq.shape is: {self.lq.shape}, event_lq.shape is: {self.event_lq.shape}"
-            print("self.event_lq.shape: ", self.event_lq.shape)
+            # print("self.event_lq.shape: ", self.event_lq.shape)
             self.output = self.net_g(self.lq, self.event_lq)
 
         if flip_seq:

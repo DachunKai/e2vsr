@@ -1,10 +1,10 @@
 # general settings
 # name: debug
 # name: BasicVSR_vimeo90k_BIx4
-name: 013_BasicVSR_x4_vimeo_300k_f64b30_B8G2_wandb
+name: 014_BasicVSR_x2_vimeo_300k_f64b30_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: VideoRecurrentModel
-scale: 4
+scale: 2
 num_gpu: auto  # official: 8 GPUs
 manual_seed: 0
 
@@ -17,7 +17,7 @@ datasets:
     # dataroot_lq: datasets/CED/train_sharp_bicubic_x2
     # (for lmdb)
     dataroot_gt: datasets/vimeo_septuplet_h5/Voxel_3/HR
-    dataroot_lq: datasets/vimeo_septuplet_h5/Voxel_3/LRx4
+    dataroot_lq: datasets/vimeo_septuplet_h5/Voxel_3/LRx2
     meta_info_file: basicsr/data/meta_info/meta_info_vimeo_h5_train.txt
     # io_backend:
       # type: disk
@@ -45,7 +45,7 @@ datasets:
     name: Vid4
     type: Vid4onlyFramesTestDataset
     dataroot_gt: datasets/Vid4_h5/Voxel_3/HR
-    dataroot_lq: datasets/Vid4_h5/Voxel_3/LRx4
+    dataroot_lq: datasets/Vid4_h5/Voxel_3/LRx2
     meta_info_file: basicsr/data/meta_info/meta_info_Vid4_h5.txt
     scale: 2
 
@@ -57,7 +57,7 @@ datasets:
 
 # network structures
 network_g:
-  type: BasicVSR
+  type: BasicVSR_x2
   num_feat: 64
   num_block: 30
   spynet_path: experiments/pretrained_models/flownet/spynet_sintel_final-3d2a1287.pth
