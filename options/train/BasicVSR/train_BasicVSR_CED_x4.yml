@@ -45,6 +45,7 @@ datasets:
     dataroot_gt: datasets/CED_3_h5/Voxel_3/HR
     dataroot_lq: datasets/CED_3_h5/Voxel_3/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_3_h5_test.txt
+    scale: 4
 
     # cache_data: true # not needed
     io_backend:

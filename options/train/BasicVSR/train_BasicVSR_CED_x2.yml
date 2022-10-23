@@ -1,6 +1,6 @@
 # general settings
-# name: debug
-name: 005_baseline_BasicVSR_x2_f64b30_CED_300k_B8G2_wandb
+name: debug
+# name: 005_baseline_BasicVSR_x2_f64b30_CED_300k_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: VideoRecurrentModel
 scale: 2
@@ -45,6 +45,7 @@ datasets:
     dataroot_gt: datasets/CED_h5/Voxel_3/HR
     dataroot_lq: datasets/CED_h5/Voxel_3/LRx2
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
+    scale: 2
 
     # cache_data: true # not needed
     io_backend:
@@ -54,7 +55,7 @@ datasets:
 
 # network structures
 network_g:
-  type: BasicVSR
+  type: BasicVSR_x2
   num_feat: 64
   num_block: 30
   spynet_path: experiments/pretrained_models/flownet/spynet_sintel_final-3d2a1287.pth

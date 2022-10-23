@@ -235,19 +235,19 @@ class VideoRecurrentModel(VideoBaseModel):
             for (folder, tensor) in self.metric_results.items()
         }
 
-        # folder_len_dict is a dict: {
-        #    count each folder frames number
-        #    folder example is: 'people_dynamic_wave/split0'
-        #    'folder1': int
-        #    'folder2': int
-        # }
-        # cnt_folder_split is a dict: {
-        #    count each root_folder split number
-        #    root_folder example: indoors_foosball_2
-        #    'root_folder1': int(759)
-        #    'root_folder2': int
-        # }
         if dataset_name.lower() == 'ced11':
+            # folder_len_dict is a dict: {
+            #    count each folder frames number
+            #    folder example is: 'people_dynamic_wave/split0'
+            #    'folder1': int
+            #    'folder2': int
+            # }
+            # cnt_folder_split is a dict: {
+            #    count each root_folder split number
+            #    root_folder example: indoors_foosball_2
+            #    'root_folder1': int(759)
+            #    'root_folder2': int
+            # }
             folder_len_dict = {}
             cnt_folder_split = {}
             for (folder, tensor) in self.metric_results.items():
@@ -257,21 +257,43 @@ class VideoRecurrentModel(VideoBaseModel):
 
             for folder, length in folder_len_dict.items():
                 cnt_folder_split[osp.dirname(folder)] += length
+
+            # total_avg_results is a dict: {
+            #    'metric1': float,
+            #    'metric2': float
+            # }
+
+            total_avg_results = {metric: 0 for metric in self.opt['val']['metrics'].keys()}
+            for folder, tensor in metric_results_avg.items():
+                for metric_idx, metric in enumerate(total_avg_results.keys()):
+                    total_avg_results[metric] += tensor[metric_idx].item() * folder_len_dict[folder]
+
+            total_samples_length = 0
+            for folder, length in folder_len_dict.items():
+                total_samples_length += length
         else:
-            raise NotImplementedError()
+            # for vid4 datasets
+            # cnt_folder is a dict:{
+            #    'folder1': int (len(folder1))
+            #    'folder2': int (len(folder2))
+            # }
+            cnt_folder = {
+                folder: tensor.size(0)
+                for (folder, tensor) in self.metric_results.items()
+            }
+            # total_avg_results is a dict: {
+            #    'metric1': float,
+            #    'metric2': float
+            # }
+            total_avg_results = {metric: 0 for metric in self.opt['val']['metrics'].keys()}
+            for folder, tensor in metric_results_avg.items():
+                for metric_idx, metric in enumerate(total_avg_results.keys()):
+                    total_avg_results[metric] += tensor[metric_idx].item() * cnt_folder[folder]
 
-        # total_avg_results is a dict: {
-        #    'metric1': float,
-        #    'metric2': float
-        # }
-        total_avg_results = {metric: 0 for metric in self.opt['val']['metrics'].keys()}
-        for folder, tensor in metric_results_avg.items():
-            for metric_idx, metric in enumerate(total_avg_results.keys()):
-                total_avg_results[metric] += tensor[metric_idx].item() * folder_len_dict[folder]
+            total_samples_length = 0
+            for folder, length in cnt_folder.items():
+                total_samples_length += length
 
-        total_samples_length = 0
-        for folder, length in folder_len_dict.items():
-            total_samples_length += length
         # average among folders
         for metric in total_avg_results.keys():
             total_avg_results[metric] /= total_samples_length
@@ -339,6 +361,10 @@ class VideoRecurrentModel(VideoBaseModel):
         if tb_logger:
             for metric_idx, (metric, value) in enumerate(total_avg_results.items()):
                 tb_logger.add_scalar(f'metrics/{metric}', value, current_iter)
-                for metric, root_result in avg_metric_dict.items():
-                    for name in name_turple:
-                        tb_logger.add_scalar(f'metrics/{metric}/{osp.splitext(name)[0]}', root_result[f'{name}'], current_iter)
+                if dataset_name.lower() == 'ced11':
+                    for metric, root_result in avg_metric_dict.items():
+                        for name in name_turple:
+                            tb_logger.add_scalar(f'metrics/{metric}/{osp.splitext(name)[0]}', root_result[f'{name}'], current_iter)
+                else:
+                    for folder, tensor in metric_results_avg.items():
+                        tb_logger.add_scalar(f'metrics/{metric}/{folder}', tensor[metric_idx].item(), current_iter)

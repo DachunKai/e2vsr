@@ -115,6 +115,51 @@ class VideoBaseModel(SRModel):
         logger.warning('nondist_validation is not implemented. Run dist_validation.')
         self.dist_validation(dataloader, current_iter, tb_logger, save_img)
 
+    # def _log_validation_metric_values(self, current_iter, dataset_name, tb_logger):
+    #     # ----------------- calculate the average values for each folder, and for each metric  ----------------- #
+    #     # average all frames for each sub-folder
+    #     # metric_results_avg is a dict:{
+    #     #    'folder1': tensor (len(metrics)),
+    #     #    'folder2': tensor (len(metrics))
+    #     # }
+    #     metric_results_avg = {
+    #         folder: torch.mean(tensor, dim=0).cpu()
+    #         for (folder, tensor) in self.metric_results.items()
+    #     }
+    #     # total_avg_results is a dict: {
+    #     #    'metric1': float,
+    #     #    'metric2': float
+    #     # }
+    #     total_avg_results = {metric: 0 for metric in self.opt['val']['metrics'].keys()}
+    #     for folder, tensor in metric_results_avg.items():
+    #         for idx, metric in enumerate(total_avg_results.keys()):
+    #             total_avg_results[metric] += metric_results_avg[folder][idx].item()
+    #     # average among folders
+    #     for metric in total_avg_results.keys():
+    #         total_avg_results[metric] /= len(metric_results_avg)
+    #         # update the best metric result
+    #         self._update_best_metric_result(dataset_name, metric, total_avg_results[metric], current_iter)
+
+    #     # ------------------------------------------ log the metric ------------------------------------------ #
+    #     log_str = f'Validation {dataset_name}\n'
+    #     for metric_idx, (metric, value) in enumerate(total_avg_results.items()):
+    #         log_str += f'\t # {metric}: {value:.4f}'
+    #         for folder, tensor in metric_results_avg.items():
+    #             log_str += f'\t # {folder}: {tensor[metric_idx].item():.4f}'
+    #         if hasattr(self, 'best_metric_results'):
+    #             log_str += (f'\n\t    Best: {self.best_metric_results[dataset_name][metric]["val"]:.4f} @ '
+    #                         f'{self.best_metric_results[dataset_name][metric]["iter"]} iter')
+    #         log_str += '\n'
+
+    #     logger = get_root_logger()
+    #     logger.info(log_str)
+    #     if tb_logger:
+    #         for metric_idx, (metric, value) in enumerate(total_avg_results.items()):
+    #             tb_logger.add_scalar(f'metrics/{metric}', value, current_iter)
+    #             for folder, tensor in metric_results_avg.items():
+    #                 tb_logger.add_scalar(f'metrics/{metric}/{folder}', tensor[metric_idx].item(), current_iter)
+
+    # used for inbalanced clip length
     def _log_validation_metric_values(self, current_iter, dataset_name, tb_logger):
         # ----------------- calculate the average values for each folder, and for each metric  ----------------- #
         # average all frames for each sub-folder
@@ -126,22 +171,35 @@ class VideoBaseModel(SRModel):
             folder: torch.mean(tensor, dim=0).cpu()
             for (folder, tensor) in self.metric_results.items()
         }
+        # cnt_folder is a dict:{
+        #    'folder1': int (len(folder1))
+        #    'folder2': int (len(folder2))
+        # }
+        cnt_folder = {
+            folder: tensor.size(0)
+            for (folder, tensor) in self.metric_results.items()
+        }
         # total_avg_results is a dict: {
         #    'metric1': float,
         #    'metric2': float
         # }
         total_avg_results = {metric: 0 for metric in self.opt['val']['metrics'].keys()}
         for folder, tensor in metric_results_avg.items():
-            for idx, metric in enumerate(total_avg_results.keys()):
-                total_avg_results[metric] += metric_results_avg[folder][idx].item()
+            for metric_idx, metric in enumerate(total_avg_results.keys()):
+                total_avg_results[metric] += tensor[metric_idx].item() * cnt_folder[folder]
+
+        total_samples_length = 0
+        for folder, length in cnt_folder.items():
+            total_samples_length += length
         # average among folders
         for metric in total_avg_results.keys():
-            total_avg_results[metric] /= len(metric_results_avg)
+            total_avg_results[metric] /= total_samples_length
             # update the best metric result
             self._update_best_metric_result(dataset_name, metric, total_avg_results[metric], current_iter)
 
         # ------------------------------------------ log the metric ------------------------------------------ #
         log_str = f'Validation {dataset_name}\n'
+
         for metric_idx, (metric, value) in enumerate(total_avg_results.items()):
             log_str += f'\t # {metric}: {value:.4f}'
             for folder, tensor in metric_results_avg.items():
