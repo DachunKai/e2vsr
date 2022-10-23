@@ -302,7 +302,7 @@ class CEDOnlyFramesTestDataset(data.Dataset):
             self.io_backend_opt['client_keys'] = ['LR', 'HR']
 
         logger = get_root_logger()
-        logger.info(f'Generate data info for CEDTestDataset - {opt["name"]}')
+        logger.info(f'Generate data info for CEDOnlyFramesTestDataset - {opt["name"]}')
 
         if 'meta_info_file' in opt:
             with open(opt['meta_info_file'], 'r') as fin:
@@ -370,7 +370,7 @@ class CEDWithEventsTestDataset(data.Dataset):
             raise ValueError(f"We don't realize {self.io_backend_opt['type']} backend")
 
         logger = get_root_logger()
-        logger.info(f'Generate data info for CEDTestDataset - {opt["name"]}')
+        logger.info(f'Generate data info for CEDWithEventsTestDataset - {opt["name"]}')
 
         if 'meta_info_file' in opt:
             with open(opt['meta_info_file'], 'r') as fin:
@@ -437,7 +437,7 @@ class Vid4onlyFramesTestDataset(data.Dataset):
             self.io_backend_opt['client_keys'] = ['LR', 'HR']
 
         logger = get_root_logger()
-        logger.info(f'Generate data info for CEDTestDataset - {opt["name"]}')
+        logger.info(f'Generate data info for Vid4onlyFramesTestDataset - {opt["name"]}')
 
         if 'meta_info_file' in opt:
             with open(opt['meta_info_file'], 'r') as fin:
@@ -501,7 +501,7 @@ class Vid4WithEventsTestDataset(data.Dataset):
             raise ValueError(f"We don't realize {self.io_backend_opt['type']} backend")
 
         logger = get_root_logger()
-        logger.info(f'Generate data info for CEDTestDataset - {opt["name"]}')
+        logger.info(f'Generate data info for Vid4WithEventsTestDataset - {opt["name"]}')
 
         if 'meta_info_file' in opt:
             with open(opt['meta_info_file'], 'r') as fin:
