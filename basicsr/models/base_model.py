@@ -17,6 +17,10 @@ class BaseModel():
         self.opt = opt
         self.device = torch.device('cuda' if opt['num_gpu'] != 0 else 'cpu')
         self.is_train = opt['is_train']
+        if self.is_train:
+            self.amp = opt['train'].get('amp')
+        if self.amp:
+            self.scaler = torch.cuda.amp.GradScaler()
         self.schedulers = []
         self.optimizers = []
 

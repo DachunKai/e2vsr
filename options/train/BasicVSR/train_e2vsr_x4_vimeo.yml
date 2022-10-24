@@ -1,7 +1,7 @@
 # general settings
-# name: debu
+name: debug
 # name: BasicVSR_vimeo90k_BIx4
-name: 014_e2vsr_x4_vimeo_300k_f64b30_B8G2_wandb
+# name: 014_e2vsr_x4_vimeo_300k_f64b30_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: E2VSRModel
 scale: 4
@@ -72,6 +72,7 @@ path:
 
 # training settings
 train:
+  amp: true
   ema_decay: 0.999
   optim_g:
     type: Adam

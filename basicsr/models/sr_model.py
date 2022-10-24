@@ -2,6 +2,7 @@ import torch
 from collections import OrderedDict
 from os import path as osp
 from tqdm import tqdm
+from torch.cuda.amp import autocast as autocast
 
 from basicsr.archs import build_network
 from basicsr.losses import build_loss
@@ -112,6 +113,39 @@ class SRModel(BaseModel):
 
         l_total.backward()
         self.optimizer_g.step()
+
+        self.log_dict = self.reduce_loss_dict(loss_dict)
+
+        if self.ema_decay > 0:
+            self.model_ema(decay=self.ema_decay)
+
+    def amp_optimize_parameters(self, current_iter):
+        self.optimizer_g.zero_grad()
+        with autocast():
+            self.output = self.net_g(self.lq)
+
+            l_total = 0
+            loss_dict = OrderedDict()
+            # pixel loss
+            if self.cri_pix:
+                l_pix = self.cri_pix(self.output, self.gt)
+                l_total += l_pix
+                loss_dict['l_pix'] = l_pix
+            # perceptual loss
+            if self.cri_perceptual:
+                l_percep, l_style = self.cri_perceptual(self.output, self.gt)
+                if l_percep is not None:
+                    l_total += l_percep
+                    loss_dict['l_percep'] = l_percep
+                if l_style is not None:
+                    l_total += l_style
+                    loss_dict['l_style'] = l_style
+
+        self.scaler.scale(l_total).backward()
+
+        self.scaler.step(self.optimizer_g)
+
+        self.scaler.step()
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
 
