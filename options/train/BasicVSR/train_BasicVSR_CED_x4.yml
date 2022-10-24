@@ -17,7 +17,7 @@ datasets:
     # (for lmdb)
     dataroot_gt: datasets/CED_h5/Voxel_3/HR
     dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
-    meta_info_file: basicsr/data/meta_info/meta_info_CED_3_h5_train.txt
+    meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_train.txt
     # io_backend:
       # type: disk
     # test_mode: False
@@ -44,7 +44,7 @@ datasets:
     type: CEDOnlyFramesTestDataset
     dataroot_gt: datasets/CED_3_h5/Voxel_3/HR
     dataroot_lq: datasets/CED_3_h5/Voxel_3/LRx4
-    meta_info_file: basicsr/data/meta_info/meta_info_CED_3_h5_test.txt
+    meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_test.txt
     scale: 4
 
     # cache_data: true # not needed

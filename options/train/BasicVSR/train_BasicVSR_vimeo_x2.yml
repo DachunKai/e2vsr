@@ -26,7 +26,7 @@ datasets:
       type: hdf5
 
     num_frame: -1
-    gt_size: 256
+    gt_size: 128
     interval_list: [1]
     random_reverse: false
     use_hflip: true

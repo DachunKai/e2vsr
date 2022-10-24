@@ -17,7 +17,7 @@ datasets:
     dataroot_gt: datasets/CED_h5/Voxel_3/HR
     dataroot_lq: datasets/CED_h5/Voxel_3/LRx4
     meta_info_file: basicsr/data/meta_info/meta_info_CED_h5_train.txt
-    # meta_info_file: basicsr/data/meta_info/debug_train_split.txt
+    # meta_info_file: basicsr/data/meta_info/debug_train_split.xt
     is_event: true
     # io_backend:
       # type: disk
