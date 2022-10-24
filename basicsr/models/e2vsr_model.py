@@ -97,7 +97,6 @@ class E2VSRModel(VideoBaseModel):
                 logger.warning('Train all the parameters.')
                 self.net_g.requires_grad_(True)
 
-        print("self.amp: ", self.amp)
         if self.amp:
             self.amp_optimize_parameters(current_iter)
         else:
