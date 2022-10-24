@@ -1,7 +1,7 @@
 # general settings
 # name: debu
 # name: BasicVSR_vimeo90k_BIx4
-name: 016_e2vsr_x4_vimeo_300k_f64b30_B8G2_wandb
+name: 014_e2vsr_x4_vimeo_300k_f64b30_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: E2VSRModel
 scale: 4
@@ -36,7 +36,7 @@ datasets:
 
     # data loader
     use_shuffle: true
-    num_worker_per_gpu: 4
+    num_worker_per_gpu: 6
     batch_size_per_gpu: 4
     dataset_enlarge_ratio: 200
     prefetch_mode: cuda
