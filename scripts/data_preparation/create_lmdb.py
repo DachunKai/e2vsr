@@ -111,20 +111,20 @@ def create_lmdb_for_vimeo90k():
     """
     # GT
     folder_path = 'datasets/vimeo90k/vimeo_septuplet/sequences'
-    lmdb_path = 'datasets/vimeo90k/vimeo90k_train_GT_only4th.lmdb'
+    lmdb_path = 'datasets/vimeo90k/vimeo90k_train_GT.lmdb'
     train_list_path = 'datasets/vimeo90k/vimeo_septuplet/sep_trainlist.txt'
-    img_path_list, keys = prepare_keys_vimeo90k(folder_path, train_list_path, 'gt')
+    img_path_list, keys = prepare_keys_vimeo90k(folder_path, train_list_path)
     make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys, multiprocessing_read=True)
 
     # LQ
     folder_path = 'datasets/vimeo90k/vimeo_septuplet_matlabLRx4/sequences'
-    lmdb_path = 'datasets/vimeo90k/vimeo90k_train_LR7frames.lmdb'
+    lmdb_path = 'datasets/vimeo90k/vimeo90k_train_LR.lmdb'
     train_list_path = 'datasets/vimeo90k/vimeo_septuplet/sep_trainlist.txt'
-    img_path_list, keys = prepare_keys_vimeo90k(folder_path, train_list_path, 'lq')
+    img_path_list, keys = prepare_keys_vimeo90k(folder_path, train_list_path)
     make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys, multiprocessing_read=True)
 
 
-def prepare_keys_vimeo90k(folder_path, train_list_path, mode):
+def prepare_keys_vimeo90k(folder_path, train_list_path, mode=None):
     """Prepare image path list and keys for Vimeo90K dataset.
 
     Args:
@@ -147,10 +147,10 @@ def prepare_keys_vimeo90k(folder_path, train_list_path, mode):
         img_path_list.extend([osp.join(folder, sub_folder, f'im{j + 1}.png') for j in range(7)])
         keys.extend([f'{folder}/{sub_folder}/im{j + 1}' for j in range(7)])
 
-    if mode == 'gt':
-        print('Only keep the 4th frame for the gt mode.')
-        img_path_list = [v for v in img_path_list if v.endswith('im4.png')]
-        keys = [v for v in keys if v.endswith('/im4')]
+    # if mode == 'gt':
+    #     print('Only keep the 4th frame for the gt mode.')
+    #     img_path_list = [v for v in img_path_list if v.endswith('im4.png')]
+    #     keys = [v for v in keys if v.endswith('/im4')]
 
     return img_path_list, keys
 

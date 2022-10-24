@@ -10,11 +10,11 @@ datasets:
   train:
     name: Vimeo90K
     type: Vimeo90KRecurrentDataset
-    dataroot_gt: datasets/vimeo90k/vimeo_septuplet/sequences
-    dataroot_lq: datasets/vimeo90k/BIx4
+    dataroot_gt: datasets/vimeo90k/vimeo90k_train_GT.lmdb
+    dataroot_lq: datasets/vimeo90k/vimeo90k_train_LR.lmdb
     meta_info_file: basicsr/data/meta_info/meta_info_Vimeo90K_train_GT.txt
     io_backend:
-      type: disk
+      type: lmdb
 
     num_frame: -1
     gt_size: 256
@@ -26,9 +26,10 @@ datasets:
 
     # data loader
     num_worker_per_gpu: 6
-    batch_size_per_gpu: 4
+    batch_size_per_gpu: 2
     dataset_enlarge_ratio: 200
-    prefetch_mode: ~
+    prefetch_mode: cuda
+    pin_memory: true
 
   val:
     name: Vid4
@@ -98,7 +99,7 @@ logger:
   save_checkpoint_freq: !!float 5e3
   use_tb_logger: true
   wandb:
-    project: ~
+    project: e2vsr
     resume_id: ~
 
 # dist training settings
