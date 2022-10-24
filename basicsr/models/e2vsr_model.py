@@ -6,6 +6,7 @@ from collections import OrderedDict
 from os import path as osp
 from torch import distributed as dist
 from tqdm import tqdm
+from torch.cuda.amp import autocast as autocast
 
 from basicsr.metrics import calculate_metric
 from basicsr.utils import get_root_logger, imwrite, tensor2img
@@ -14,6 +15,7 @@ from basicsr.utils.dist_util import get_dist_info
 from basicsr.utils.registry import MODEL_REGISTRY
 from .video_base_model import VideoBaseModel
 from torchvision import utils as vutils
+
 
 def save_image_tensor(input_tensor: torch.Tensor, filename):
     """
@@ -95,6 +97,13 @@ class E2VSRModel(VideoBaseModel):
                 logger.warning('Train all the parameters.')
                 self.net_g.requires_grad_(True)
 
+        print("self.amp: ", self.amp)
+        if self.amp:
+            self.amp_optimize_parameters(current_iter)
+        else:
+            self.normal_optimize_parameters(current_iter)
+
+    def normal_optimize_parameters(self, current_iter):
         self.optimizer_g.zero_grad()
         self.output = self.net_g(self.lq, self.event_lq)
 
@@ -123,6 +132,45 @@ class E2VSRModel(VideoBaseModel):
 
         l_total.backward()
         self.optimizer_g.step()
+
+        self.log_dict = self.reduce_loss_dict(loss_dict)
+
+        if self.ema_decay > 0:
+            self.model_ema(decay=self.ema_decay)
+
+    def amp_optimize_parameters(self, current_iter):
+        self.optimizer_g.zero_grad()
+        with autocast():
+            self.output = self.net_g(self.lq, self.event_lq)
+
+            l_total = 0
+            loss_dict = OrderedDict()
+            # pixel loss
+            if self.cri_pix:
+                l_pix = self.cri_pix(self.output, self.gt)
+                if torch.isnan(l_pix).any():
+                    print("self.key: ", self.key)
+                    print("self.output.shape: ", self.output.shape, '\t', "self.gt.shape: ", self.gt.shape)
+                    print("torch.isnan(self.output).any(): ", torch.isnan(self.output).any())
+                    print("torch.isnan(self.gt).any(): ", torch.isnan(self.gt).any())
+                    raise ValueError(f"l_pix is nan. Please check.")
+                l_total += l_pix
+                loss_dict['l_pix'] = l_pix
+            # perceptual loss
+            if self.cri_perceptual:
+                l_percep, l_style = self.cri_perceptual(self.output, self.gt)
+                if l_percep is not None:
+                    l_total += l_percep
+                    loss_dict['l_percep'] = l_percep
+                if l_style is not None:
+                    l_total += l_style
+                    loss_dict['l_style'] = l_style
+
+        self.scaler.scale(l_total).backward()
+
+        self.scaler.step(self.optimizer_g)
+
+        self.scaler.update()
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
 
@@ -254,7 +302,8 @@ class E2VSRModel(VideoBaseModel):
             self.lq = torch.cat([self.lq, self.lq.flip(1)], dim=1)
 
         with torch.no_grad():
-            assert self.lq.shape[1] == self.event_lq.shape[1] + 1, f"{folder} shape error, lq.shape is: {self.lq.shape}, event_lq.shape is: {self.event_lq.shape}"
+            assert self.lq.shape[1] == self.event_lq.shape[
+                1] + 1, f"{folder} shape error, lq.shape is: {self.lq.shape}, event_lq.shape is: {self.event_lq.shape}"
             # print("self.event_lq.shape: ", self.event_lq.shape)
             self.output = self.net_g(self.lq, self.event_lq)
 
@@ -331,10 +380,7 @@ class E2VSRModel(VideoBaseModel):
             #    'folder1': int (len(folder1))
             #    'folder2': int (len(folder2))
             # }
-            cnt_folder = {
-                folder: tensor.size(0)
-                for (folder, tensor) in self.metric_results.items()
-            }
+            cnt_folder = {folder: tensor.size(0) for (folder, tensor) in self.metric_results.items()}
             # total_avg_results is a dict: {
             #    'metric1': float,
             #    'metric2': float
@@ -398,7 +444,7 @@ class E2VSRModel(VideoBaseModel):
                     log_str += f'\n\t # {osp.splitext(name)[0]}: {avg_metric_dict[metric][name]:.4f}'
                 if hasattr(self, 'best_metric_results'):
                     log_str += (f'\n\t Best: {self.best_metric_results[dataset_name][metric]["val"]:.4f} @ '
-                            f'{self.best_metric_results[dataset_name][metric]["iter"]} iter')
+                                f'{self.best_metric_results[dataset_name][metric]["iter"]} iter')
 
         else:
             for metric_idx, (metric, value) in enumerate(total_avg_results.items()):
@@ -418,7 +464,8 @@ class E2VSRModel(VideoBaseModel):
                 if dataset_name.lower() == 'ced11':
                     for metric, root_result in avg_metric_dict.items():
                         for name in name_turple:
-                            tb_logger.add_scalar(f'metrics/{metric}/{osp.splitext(name)[0]}', root_result[f'{name}'], current_iter)
+                            tb_logger.add_scalar(f'metrics/{metric}/{osp.splitext(name)[0]}', root_result[f'{name}'],
+                                                 current_iter)
                 else:
                     for folder, tensor in metric_results_avg.items():
                         tb_logger.add_scalar(f'metrics/{metric}/{folder}', tensor[metric_idx].item(), current_iter)

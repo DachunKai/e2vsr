@@ -145,7 +145,7 @@ class SRModel(BaseModel):
 
         self.scaler.step(self.optimizer_g)
 
-        self.scaler.step()
+        self.scaler.update()
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
 
