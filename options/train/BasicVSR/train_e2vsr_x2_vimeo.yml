@@ -1,7 +1,7 @@
 # general settings
 name: debug
 # name: BasicVSR_vimeo90k_BIx4
-# name: 014_BasicVSR_x2_vimeo_300k_f64b30_B8G2_wandb
+# name: 015_e2vsr_x2_vimeo_300k_f64b30_B8G2_wandb
 # name: debug_test_BasicVSR_CED
 model_type: E2VSRModel
 scale: 2
@@ -18,7 +18,7 @@ datasets:
     # (for lmdb)
     dataroot_gt: datasets/vimeo_septuplet_h5/Voxel_3/HR
     dataroot_lq: datasets/vimeo_septuplet_h5/Voxel_3/LRx2
-    meta_info_file: basicsr/data/meta_info/meta_info_vimeo_h5_train.txt
+    meta_info_file: basicsr/data/meta_info/debug_loss_nan.txt
     is_event: true
     # io_backend:
       # type: disk
@@ -35,10 +35,9 @@ datasets:
     flip_sequences: true
 
     # data loader
-    use_shuffle: true
     num_worker_per_gpu: 0
-    batch_size_per_gpu: 2
-    dataset_enlarge_ratio: 200
+    batch_size_per_gpu: 1
+    dataset_enlarge_ratio: 1
     prefetch_mode: cuda
     pin_memory: true
 

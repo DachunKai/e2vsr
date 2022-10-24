@@ -33,13 +33,13 @@ def create_train_val_dataloader(opt, logger):
         if phase == 'train':
             dataset_enlarge_ratio = dataset_opt.get('dataset_enlarge_ratio', 1)
             train_set = build_dataset(dataset_opt)
-            train_sampler = EnlargedSampler(train_set, opt['world_size'], opt['rank'], dataset_enlarge_ratio)
+            # train_sampler = EnlargedSampler(train_set, opt['world_size'], opt['rank'], dataset_enlarge_ratio)
             train_loader = build_dataloader(
                 train_set,
                 dataset_opt,
                 num_gpu=opt['num_gpu'],
                 dist=opt['dist'],
-                sampler=train_sampler,
+                # sampler=train_sampler,
                 seed=opt['manual_seed'])
 
             num_iter_per_epoch = math.ceil(
@@ -62,7 +62,7 @@ def create_train_val_dataloader(opt, logger):
         else:
             raise ValueError(f'Dataset phase {phase} is not recognized.')
 
-    return train_loader, train_sampler, val_loaders, total_epochs, total_iters
+    return train_loader, val_loaders, total_epochs, total_iters
 
 
 def load_resume_state(opt):
@@ -118,7 +118,7 @@ def train_pipeline(root_path):
 
     # create train and validation dataloaders
     result = create_train_val_dataloader(opt, logger)
-    train_loader, train_sampler, val_loaders, total_epochs, total_iters = result
+    train_loader, val_loaders, total_epochs, total_iters = result
 
     # create model
     model = build_model(opt)
@@ -152,7 +152,7 @@ def train_pipeline(root_path):
     start_time = time.time()
 
     for epoch in range(start_epoch, total_epochs + 1):
-        train_sampler.set_epoch(epoch)
+        # train_sampler.set_epoch(epoch)
         prefetcher.reset()
         train_data = prefetcher.next()
 
